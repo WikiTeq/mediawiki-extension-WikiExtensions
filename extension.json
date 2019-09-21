@@ -1,0 +1,40 @@
+{
+	"name": "WikiExtensions",
+	"version": "0.1",
+	"author": [
+		"WikiTeq"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:WikiExtensions",
+	"descriptionmsg": "wikiextensions-desc",
+	"license-name": "GPL-2.0-or-later",
+	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.31.0"
+	},
+	"MessagesDirs": {
+		"WikiExtensions": [
+			"i18n"
+		]
+	},
+	"Hooks": {},
+	"ResourceModules": {
+		"ext.wikiextensions.special": {
+			"styles": [
+				"style.less"
+			],
+			"position": "top"
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "modules",
+		"remoteExtPath": "WikiExtensions/modules"
+	},
+	"AutoloadClasses": {
+		"WikiExtensions\\WikiExtensions": "includes/WikiExtensions.php",
+		"WikiExtensions\\SpecialWikiExtensions": "includes/SpecialWikiExtensions.php"
+	},
+	"SpecialPages": {
+		"WikiExtensions": "WikiExtensions\\SpecialWikiExtensions"
+	},
+	"manifest_version": 1
+}
