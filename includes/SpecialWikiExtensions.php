@@ -2,10 +2,10 @@
 
 namespace WikiExtensions;
 
+use Cz\Git\GitRepository;
 use Cz\Git\GitException;
 use ExtensionRegistry;
 use SpecialPage;
-use Cz\Git\GitRepository;
 use TemplateParser;
 
 class SpecialWikiExtensions extends SpecialPage {

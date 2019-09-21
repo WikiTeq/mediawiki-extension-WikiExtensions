@@ -31,10 +31,22 @@
 	},
 	"AutoloadClasses": {
 		"WikiExtensions\\WikiExtensions": "includes/WikiExtensions.php",
-		"WikiExtensions\\SpecialWikiExtensions": "includes/SpecialWikiExtensions.php"
+		"WikiExtensions\\SpecialWikiExtensions": "includes/SpecialWikiExtensions.php",
+		"WikiExtensions\\WikiExtensionsApi": "includes/WikiExtensionsApi.php"
 	},
 	"SpecialPages": {
 		"WikiExtensions": "WikiExtensions\\SpecialWikiExtensions"
+	},
+	"APIModules": {
+		"wikiextensions": "WikiExtensions\\WikiExtensionsApi"
+	},
+	"AvailableRights": [
+		"wikiextensions_update"
+	],
+	"GroupPermissions": {
+		"sysop": {
+			"wikiextensions_update": true
+		}
 	},
 	"manifest_version": 1
 }
