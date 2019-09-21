@@ -3,6 +3,7 @@
 namespace WikiExtensions;
 
 use ApiBase;
+use User;
 
 class WikiExtensionsApi extends ApiBase {
 
@@ -41,10 +42,20 @@ class WikiExtensionsApi extends ApiBase {
 	}
 
 	private function updateExtension( $extension ) {
-		if( $this->getUser()->isAllowed('wikiextensions_update') ) {
+		if( $this->getUser()->isAllowed('wikiextensions_update') || $this->isWhitelisted() ) {
 			$result = WikiExtensions::getInstance()->updateExtension( $extension );
 			$this->formattedData['status'] = $result ? 'OK' : 'FAIL';
 		}
+	}
+
+	private function isWhitelisted() {
+		global $wgWikiExtensionsAllowedIP;
+		if( $this->getUser()->isAnon() && User::isIP( $this->getUser()->getName() ) ) {
+			if( in_array( $this->getUser()->getName(), $wgWikiExtensionsAllowedIP ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function getAllowedParams() {

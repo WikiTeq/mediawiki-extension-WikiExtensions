@@ -17,6 +17,9 @@
 		]
 	},
 	"Hooks": {},
+	"config": {
+		"WikiExtensionsAllowedIP": []
+	},
 	"ResourceModules": {
 		"ext.wikiextensions.special": {
 			"styles": [
