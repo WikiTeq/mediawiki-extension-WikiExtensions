@@ -26,6 +26,46 @@ Usage
 * Navigate to `Special:WikiExtensions` to see extensions updates and do upgrades
 * Use `wikiextensions` API endpoint to list extensions updates and do upgrades
 
+API
+---
+
+The `wikiextensions` provides following methods:
+
+* `do=list` - lists all extensions available and their states
+* `do=update&extensions=Vector` - tries to update the extension
+* `do=extension&extension=Vector` - fetch single extension state
+
+The response structure is:
+
+```json
+{ 
+   "wikiextensions":{ 
+      "status":"OK",
+      "extensions": [
+        {
+             "name":"Vector",
+             "version":"1.0",
+             "is_writable":1,
+             "is_git":1,
+             "has_updates":1,
+             "has_uncommitted_changes":0,
+             "can_pull":1,
+             "git":{ 
+                "branch":"master",
+                "remote_commit":"b149101e60ca1c9d57f144ee6bb55f94c5e50b80",
+                "local_commit":"b149101e60ca1c9d57f144ee6bb55f94c5e50b80",
+                "remote_commit_short":"b149101",
+                "local_commit_short":"b149101"
+             },
+             "error":null
+        },
+        { ... },
+        { ... }
+      ]
+   }
+}
+```
+
 Configuration
 -------------
 
