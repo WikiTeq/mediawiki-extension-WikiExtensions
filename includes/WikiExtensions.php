@@ -26,7 +26,7 @@ class WikiExtensions {
 		$things = $this->extensionRegistry->getAllThings();
 		$data = [];
 		foreach ( $things as $key => $thing ) {
-			$data[] = $this->getExtension( $key );
+			$data[ $key ] = $this->getExtension( $key );
 		}
 		return $data;
 	}

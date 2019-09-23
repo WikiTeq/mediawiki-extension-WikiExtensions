@@ -42,7 +42,7 @@ class SpecialWikiExtensions extends SpecialPage {
 
 		$r = $this->getRequest()->getVal('r');
 		if( $r ) {
-			$out->addWikiTextAsContent( \Sanitizer::removeHTMLtags( $r ) );
+			$out->addHTML( \Sanitizer::removeHTMLtags( $r ) );
 		}
 
 		$html = $this->renderHomepage();
