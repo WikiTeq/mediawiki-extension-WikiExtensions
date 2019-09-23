@@ -35,3 +35,10 @@ updates (granted to `sysop` by default)
 and list extensions statuses
 * Use `wgWikiExtensionsAllowedIP` configuration array to list IPs
 allowed to perform upgrades without extra authentication
+
+Contributing
+------------
+
+Tip: if you'd like to test things out and bored with joggling git repo
+just pick a stale repository and do `git reset --keep HEAD@{1}` after updates,
+it will allow you to quickly rollback to before `git pull` state. 

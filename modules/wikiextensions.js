@@ -41,7 +41,7 @@
 			}
 			if ( !extension.git.remote_commit ) {
 				status = 'red';
-				message = 'No remotes found';
+				message = 'No remotes found or detached';
 			}
 			if ( !extension.is_writable ) {
 				status = 'red';
