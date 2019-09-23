@@ -32,19 +32,28 @@ class WikiExtensionsApi extends ApiBase {
 	}
 
 	private function doList() {
-		$this->formattedData['extensions'] = WikiExtensions::getInstance()->getExtensions();
-		$this->formattedData['status'] = 'OK';
+		if( $this->getUser()->isAllowed( 'wikiextensions_view' ) || $this->isWhitelisted() ) {
+			$this->formattedData['extensions'] = WikiExtensions::getInstance()->getExtensions();
+			$this->formattedData['status'] = 'OK';
+		}else{
+			$this->formattedData['status'] = 'FAIL';
+		}
 	}
 
 	private function doExtension( $extension ) {
-		$this->formattedData['extension'] = WikiExtensions::getInstance()->getExtension( $extension );
-		$this->formattedData['status'] = 'OK';
+		if( $this->getUser()->isAllowed( 'wikiextensions_view' ) || $this->isWhitelisted() ) {
+			$this->formattedData['extension'] = WikiExtensions::getInstance()->getExtension( $extension );
+			$this->formattedData['status'] = 'OK';
+		}else{
+			$this->formattedData['status'] = 'FAIL';
+		}
 	}
 
 	private function updateExtension( $extension ) {
 		if( $this->getUser()->isAllowed('wikiextensions_update') || $this->isWhitelisted() ) {
 			$result = WikiExtensions::getInstance()->updateExtension( $extension );
 			$this->formattedData['status'] = $result ? 'OK' : 'FAIL';
+			$this->formattedData['extension'] = WikiExtensions::getInstance()->getExtension( $extension );
 		}
 	}
 

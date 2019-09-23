@@ -26,78 +26,106 @@ class WikiExtensions {
 		$things = $this->extensionRegistry->getAllThings();
 		$data = [];
 		foreach ( $things as $key => $thing ) {
-			$data[ $key ] = $this->getExtension( $key );
+			$data[] = $this->getExtension( $key );
 		}
 		return $data;
 	}
 
 	public function getExtension( $extensionName ) {
+
+		// Get the extension from registry
 		$things = $things = $this->extensionRegistry->getAllThings();
 
+		// Bow out quickly in case of wrong name
 		if( !array_key_exists( $extensionName, $things ) ) {
 			return null;
 		}
 
+		// Get the extension directory
 		$extension = $things[ $extensionName ];
 		$path = dirname( $extension['path'] );
 
-		$changesRemote = false;
-		$changesLocal = false;
-		$detached = false;
-		$localBranch = null;
-		$commit = null;
-		$writable = false;
-		$isGit = false;
+		// Form default answer
+		$result = [
+			'name' => $extensionName,
+			'version' => isset( $extension['version'] ) ? $extension['version'] : null,
+			'is_writable' => (int)false,
+			'is_git' => (int)false,
+			'has_updates' => (int)false,
+			'has_uncommitted_changes' => (int)false,
+			'can_pull' => (int)false,
+			'git' => [
+				'branch' => null,
+				'remote_commit' => null,
+				'local_commit' => null,
+				'remote_commit_short' => null,
+				'local_commit_short' => null
+			],
+			'error' => null
+		];
 
-		// TODO: rework!
-		if( file_exists( $path . '/.git' ) ) {
-			$isGit = true;
+		// Check if .git dir exists and bow out if it's not
+		if( !file_exists( $path . '/.git' ) ) {
+			return $result;
+		}
 
-			if ( is_writable( $path . '/.git' ) ) {
+		$result['is_git'] = (int)true;
 
-				$writable = true;
+		// Check if .git is writable and bow out if it's not
+		if ( !is_writable( $path . '/.git' ) ) {
+			return $result;
+		}
 
-				try {
-					$repo = new GitRepository( $path );
-					$repo->fetch();
-					$localBranch = $repo->getCurrentBranchName();
+		$result['is_writable'] = (int)true;
 
-					if ( strpos( $localBranch, 'HEAD detached' ) == false ) {
-						$commit = $repo->getLastCommitId();
-						$res = $repo->execute( [
-							'rev-parse',
-							$localBranch . '@{upstream}'
-						] );
-						$remoteCommit = $res[0];
+		// Try to get some GIT information
+		try {
+			// Init the repository
+			$repo = new GitRepository( $path );
+			// Get local branch name
+			$localBranch = $repo->getCurrentBranchName();
+			$result['git']['branch'] = $localBranch;
+			// Get local commit SHA
+			$commit = $repo->getLastCommitId();
+			$result['git']['local_commit'] = $commit;
+			$result['git']['local_commit_short'] = substr( $commit, 0, 7 );
+			// Check if we're in detached HEAD state, in such case
+			// we can't do pull because we're not tracking any remotes
+			if( strpos( $localBranch, 'detached' ) !== false ) {
+				// HEAD is detached, bow out
+				return $result;
+			}else{
+				// Fetch remote
+				$repo->fetch();
+				// Get remote commit SHA
+				$res = $repo->execute( [
+					'rev-parse',
+					$localBranch . '@{upstream}'
+				] );
+				$remoteCommit = $res[0];
+				$result['git']['remote_commit'] = $remoteCommit;
+				$result['git']['remote_commit_short'] = substr( $remoteCommit, 0, 7 );
 
-						if ( $remoteCommit != $commit ) {
-							$changesRemote = true;
-						}
-					} else {
-						// HEAD is detached
-						$detached = true;
-					}
-
-					$changesLocal = $repo->hasChanges();
-
+				if ( $remoteCommit != $commit ) {
+					$result['has_updates'] = (int)true;
+					$result['can_pull'] = (int)true;
 				}
-				catch ( GitException $e ) {
-					// Could be not a git repo, so just skip
-				}
+			}
 
+			$result['has_uncommitted_changes'] = (int)$repo->hasChanges();
+			if( $result['has_uncommitted_changes'] ) {
+				$result['can_pull'] = (int)false;
 			}
 
 		}
+		catch ( GitException $e ) {
+			// Something gone wrong, do nothing
+			$result['error'] = $e->getMessage();
+			$result['can_pull'] = (int)false;
+			return $result;
+		}
 
-		return [
-			'local' => $changesLocal,
-			'remote' => $changesRemote,
-			'detached' => $detached,
-			'branch' => $localBranch,
-			'commit' => $commit,
-			'can_write' => $writable,
-			'is_git' => $isGit
-		];
+		return $result;
 	}
 
 	public function updateExtension( $extensionName ) {

@@ -1,4 +1,5 @@
 .wikiextensions-table {
+	width: 100%;
 	th {
 		padding: 10px;
 		text-align: left;
@@ -9,6 +10,23 @@
 		border-bottom: 1px solid #f4f4f4;
 		&.center {
 			text-align: center;
+		}
+		&.loading-row {
+			background: linear-gradient(
+				45deg,
+				transparent 25%,
+				rgba(238, 238, 238, 0.5) 25%,
+				rgba(238, 238, 238, 0.5) 30%,
+				transparent 30%,
+				transparent 35%,
+				rgba(238, 238, 238, 0.5) 35%,
+				rgba(238, 238, 238, 0.5) 70%,
+				transparent 70%
+			);
+			animation: shift2 2s linear infinite;
+			background-size: 100px 100%;
+			box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.2),
+			inset 0 -2px 1px rgba(0, 0, 0, 0.2);
 		}
 	}
 	span.wikiextensions-status-green {
@@ -27,5 +45,64 @@
 	}
 	input[type="submit"] {
 		font-size: 1.2em;
+	}
+	.update-extension-button {
+		padding: 4px 10px;
+		border-radius: 4px;
+		background-color: #589216;
+		color: white;
+		text-align: center;
+		cursor: pointer;
+		display: inline-block;
+
+		&:hover {
+			background-color: #60a018;
+		}
+		&.btn-loading {
+			cursor: not-allowed;
+			color: gray;
+			background: linear-gradient(
+				45deg,
+				transparent 25%,
+				rgba(238, 238, 238, 0.5) 25%,
+				rgba(238, 238, 238, 0.5) 30%,
+				transparent 30%,
+				transparent 35%,
+				rgba(238, 238, 238, 0.5) 35%,
+				rgba(238, 238, 238, 0.5) 70%,
+				transparent 70%
+			);
+			animation: shift 2s linear infinite;
+			background-size: 60px 100%;
+			box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.2),
+			inset 0 -2px 1px rgba(0, 0, 0, 0.2);
+		}
+	}
+	tr.animation-new-in {
+		td {
+			background-color: rgba(0, 255, 0, 0);
+			animation: newin 1s linear;
+		}
+	}
+}
+
+@keyframes newin {
+	from {
+		background-color: rgba(0, 166, 0, 0.33);
+	}
+	to {
+		background-color: rgba(0, 255, 0, 0);
+	}
+}
+
+@keyframes shift {
+	to {
+		background-position: 60px 100%;
+	}
+}
+
+@keyframes shift2 {
+	to {
+		background-position: 100px 100%;
 	}
 }

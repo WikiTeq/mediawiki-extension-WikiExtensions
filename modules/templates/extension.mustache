@@ -1,0 +1,22 @@
+<tr data-extension="{{ name }}">
+	<td>{{ name }}</td>
+	<td>{{ version }}</td>
+	{{# is_git }}
+		<td>{{ git.branch }}</td>
+		<td>{{ git.local_commit_short }} - {{ git.remote_commit_short }}</td>
+		<td>
+			{{# can_pull }}
+				<div class="update-extension-button" data-extension="{{ name }}">⇩ Update</div>
+			{{/ can_pull}}
+			{{^ can_pull }}
+				<span class="wikiextensions-status-{{status}}"></span>
+				{{message}}
+			{{/ can_pull}}
+		</td>
+	{{/is_git}}
+	{{^ is_git }}
+		<td colspan="3">
+			Not a Git repository!
+		</td>
+	{{/is_git}}
+</tr>

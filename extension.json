@@ -18,12 +18,26 @@
 	},
 	"Hooks": {},
 	"config": {
-		"WikiExtensionsAllowedIP": []
+		"WikiExtensionsAllowedIP": [
+			"127.0.0.1",
+			"localhost"
+		]
 	},
 	"ResourceModules": {
 		"ext.wikiextensions.special": {
 			"styles": [
 				"style.less"
+			],
+			"scripts": [
+				"wikiextensions.js",
+				"script.js"
+			],
+			"templates": {
+				"extension.mustache": "templates/extension.mustache",
+				"loading.mustache": "templates/loading.mustache"
+			},
+			"messages": [
+
 			],
 			"position": "top"
 		}
@@ -44,11 +58,13 @@
 		"wikiextensions": "WikiExtensions\\WikiExtensionsApi"
 	},
 	"AvailableRights": [
-		"wikiextensions_update"
+		"wikiextensions_update",
+		"wikiextensions_view"
 	],
 	"GroupPermissions": {
 		"sysop": {
-			"wikiextensions_update": true
+			"wikiextensions_update": true,
+			"wikiextensions_view": true
 		}
 	},
 	"manifest_version": 1

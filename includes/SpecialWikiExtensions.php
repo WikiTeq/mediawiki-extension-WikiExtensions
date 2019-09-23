@@ -16,11 +16,16 @@ class SpecialWikiExtensions extends SpecialPage {
 
 	public function execute( $param = null ) {
 
+		if( !$this->getUser()->isAllowed( 'wikiextensions_view' ) ) {
+			$this->displayRestrictionError();
+			return;
+		}
+
 		$out = $this->getOutput();
 		$out->addModules( 'ext.wikiextensions.special' );
 		$out->setPageTitle( wfMessage( 'wikiextensions-special-extensions-title' ) );
 
-		if ( $this->getRequest()->wasPosted() ) {
+		/*if ( $this->getRequest()->wasPosted() ) {
 			$update = $this->getRequest()->getVal( 'extension' );
 			if ( $update ) {
 				if( $this->updateExtension( $update ) ) {
@@ -43,7 +48,7 @@ class SpecialWikiExtensions extends SpecialPage {
 		$r = $this->getRequest()->getVal('r');
 		if( $r ) {
 			$out->addHTML( \Sanitizer::removeHTMLtags( $r ) );
-		}
+		}*/
 
 		$html = $this->renderHomepage();
 
@@ -88,7 +93,7 @@ class SpecialWikiExtensions extends SpecialPage {
 
 		$things = ExtensionRegistry::getInstance()->getAllThings();
 
-		$data = [];
+		/*$data = [];
 		foreach ( $things as $key => $thing ) {
 			$info = $this->fetchExtensionState( $thing );
 			$data[] = [
@@ -97,9 +102,9 @@ class SpecialWikiExtensions extends SpecialPage {
 				'can_update' => $info['is_git'] && $info['can_write'] && (!$info['local'] && $info['remote']),
 				'data' => $info
 			];
-		}
+		}*/
 
-		$html = $tp->processTemplate( 'extensions', [ 'extensions' => $data ] );
+		$html = $tp->processTemplate( 'extensions', [] /*[ 'extensions' => $data ]*/ );
 		return $html;
 	}
 
