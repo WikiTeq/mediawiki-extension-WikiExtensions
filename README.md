@@ -82,3 +82,13 @@ Contributing
 Tip: if you'd like to test things out and bored with joggling git repo
 just pick a stale repository and do `git reset --keep HEAD@{1}` after updates,
 it will allow you to quickly rollback to before `git pull` state. 
+
+Troubleshooting
+---------------
+
+* Ensure your extensions files has correct permissions for git operations to
+be run under web server user, eg: files need to be owned by www-user
+* Ensure your server knows about git hosts you're going to use, eg.: sometimes
+there could be issues with bitbucket.org & github.com, as a solution you can
+do `ssh-keyscan github.com >> ~/.ssh/known_hosts` and `ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts`
+and better option would be to use HTTP(s) to clone extensions instead of SSH.

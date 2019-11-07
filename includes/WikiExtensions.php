@@ -5,6 +5,7 @@ namespace WikiExtensions;
 use Cz\Git\GitRepository;
 use Cz\Git\GitException;
 use ExtensionRegistry;
+use MediaWiki\Shell\Shell;
 
 class WikiExtensions {
 
@@ -95,8 +96,9 @@ class WikiExtensions {
 				// HEAD is detached, bow out
 				return $result;
 			}else{
+				passthru( "GIT_SSH_COMMAND=\"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\"" );
 				// Fetch remote
-				$repo->fetch();
+				$repo->fetch(null, [ '-q' ]);
 				// Get remote commit SHA
 				$res = $repo->execute( [
 					'rev-parse',

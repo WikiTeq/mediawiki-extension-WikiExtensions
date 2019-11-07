@@ -74,7 +74,7 @@
 	};
 
 	WikiExtensions.prototype.onUpdateResult = function ( data, extension ) {
-		// TODO: rework
+		// TODO: rework and do some fallback to initial state for the row on error
 		if ( data.wikiextensions.status !== 'OK' ) {
 			alert( 'Something gone wrong, unable to update the extension. Changes were reverted.' );
 			return;
