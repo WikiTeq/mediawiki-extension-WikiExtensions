@@ -3,12 +3,16 @@
 namespace WikiExtensions;
 
 use ApiBase;
+use ApiUsageException;
 use User;
 
 class WikiExtensionsApi extends ApiBase {
 
 	private $formattedData;
 
+	/**
+	 * @throws ApiUsageException
+	 */
 	public function execute() {
 		$params = $this->extractRequestParams();
 		$action = $params['do'];

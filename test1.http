@@ -1,4 +1,0 @@
-GET http://mediawiki.local/api.php?action=wikiextensions&format=json&do=list
-Accept: application/json
-
-###

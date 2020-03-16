@@ -5,12 +5,12 @@ namespace WikiExtensions;
 use Cz\Git\GitRepository;
 use Cz\Git\GitException;
 use ExtensionRegistry;
-use MediaWiki\Shell\Shell;
 
 class WikiExtensions {
 
 	private static $instance = null;
 	private $extensionRegistry;
+	private $things;
 
 	public static function getInstance() {
 		if( self::$instance === null ) {
@@ -21,12 +21,12 @@ class WikiExtensions {
 
 	public function __construct() {
 		$this->extensionRegistry = ExtensionRegistry::getInstance();
+		$this->things = $this->extensionRegistry->getAllThings();
 	}
 
 	public function getExtensions() {
-		$things = $this->extensionRegistry->getAllThings();
 		$data = [];
-		foreach ( $things as $key => $thing ) {
+		foreach ( $this->things as $key => $thing ) {
 			$data[] = $this->getExtension( $key );
 		}
 		return $data;
@@ -34,16 +34,13 @@ class WikiExtensions {
 
 	public function getExtension( $extensionName ) {
 
-		// Get the extension from registry
-		$things = $things = $this->extensionRegistry->getAllThings();
-
-		// Bow out quickly in case of wrong name
-		if( !array_key_exists( $extensionName, $things ) ) {
+		// Bow out quickly in case of a wrong extension name
+		if( !array_key_exists( $extensionName, $this->things ) ) {
 			return null;
 		}
 
 		// Get the extension directory
-		$extension = $things[ $extensionName ];
+		$extension = $this->things[ $extensionName ];
 		$path = dirname( $extension['path'] );
 
 		// Form default answer
@@ -55,6 +52,7 @@ class WikiExtensions {
 			'has_updates' => (int)false,
 			'has_uncommitted_changes' => (int)false,
 			'can_pull' => (int)false,
+			'has_submodules' => (int)false,
 			'git' => [
 				'branch' => null,
 				'remote_commit' => null,
@@ -72,12 +70,16 @@ class WikiExtensions {
 
 		$result['is_git'] = (int)true;
 
-		// Check if .git is writable and bow out if it's not
+		// Check if .git dir is writable and bow out if it's not
 		if ( !is_writable( $path . '/.git' ) ) {
 			return $result;
 		}
 
 		$result['is_writable'] = (int)true;
+
+		if( file_exists( $path . '/.gitmodules' ) ) {
+			$result['has_submodules'] = (int)true;
+		}
 
 		// Try to get some GIT information
 		try {
@@ -130,14 +132,19 @@ class WikiExtensions {
 		return $result;
 	}
 
+	/**
+	 * @param $extensionName
+	 *
+	 * @return bool|null
+	 * @throws GitException
+	 */
 	public function updateExtension( $extensionName ) {
-		$things = $this->extensionRegistry->getAllThings();
 
-		if( !array_key_exists( $extensionName, $things ) ) {
+		if( !array_key_exists( $extensionName, $this->things ) ) {
 			return null;
 		}
 
-		$path = dirname( $things[ $extensionName ]['path'] );
+		$path = dirname( $this->things[ $extensionName ]['path'] );
 
 		try {
 			$repo = new GitRepository( $path );
@@ -148,7 +155,15 @@ class WikiExtensions {
 		}
 
 		try {
+			// Pull changes
 			$repo->pull();
+			// Pull submodules
+			if( file_exists( $path . '/.gitmodules' ) ) {
+				$repo->execute([
+					'submodule',
+					'update'
+				]);
+			}
 			return true;
 		}
 		catch ( GitException $e ) {
