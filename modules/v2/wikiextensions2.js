@@ -147,6 +147,10 @@
 
 				}, function ( code, error ) {
 					panel.$element.removeClass( 'loading-row' );
+					if ( OO.ui.hasOwnProperty('MessageWidget') ) {
+						statusLine.setType( 'error' );
+					}
+					statusLine.setLabel( error );
 					console.log( code, error );
 				} );
 			} );
