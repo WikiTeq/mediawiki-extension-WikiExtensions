@@ -1,5 +1,8 @@
 {
-	"wikiextensions-desc": "Tracks installed extensions state",
-	"wikiextensions-special-extensions-title": "Installed extension",
-	"wikiextensions-special-extensions-desc": ""
+	"wikiextensions-desc": "Tracks git-installed extensions updates",
+	"wikiextensions-special-extensions-title": "Extensions management",
+	"wikiextensions-special-extensions-desc": "Allows to manage git-installed extensions",
+	"wikiextensions-special-update": "Update",
+	"wikiextensions-api-error-unknown": "Something gone wrong, unable to update the extension. Changes were reverted.",
+	"wikiextensions-special-not-git": "Not a Git repository!"
 }

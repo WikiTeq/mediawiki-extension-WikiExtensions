@@ -29,17 +29,27 @@
 				"style.less"
 			],
 			"scripts": [
-				"wikiextensions.js",
-				"script.js"
+				"v2/wikiextensions2.js",
+				"v2/script.js"
 			],
 			"templates": {
 				"extension.mustache": "templates/extension.mustache",
 				"loading.mustache": "templates/loading.mustache"
 			},
 			"messages": [
-
+				"wikiextensions-special-update",
+				"wikiextensions-api-error-unknown",
+				"wikiextensions-special-not-git"
 			],
-			"position": "top"
+			"dependencies": [
+				"oojs",
+				"oojs-ui",
+				"oojs-ui-core",
+				"oojs-ui-widgets",
+				"oojs-ui.styles.icons-movement",
+				"oojs-ui.styles.icons-interactions",
+				"oojs-ui.styles.icons-content"
+			]
 		}
 	},
 	"ResourceFileModulePaths": {

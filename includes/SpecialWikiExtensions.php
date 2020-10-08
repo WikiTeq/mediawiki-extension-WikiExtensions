@@ -25,31 +25,6 @@ class SpecialWikiExtensions extends SpecialPage {
 		$out->addModules( 'ext.wikiextensions.special' );
 		$out->setPageTitle( wfMessage( 'wikiextensions-special-extensions-title' ) );
 
-		/*if ( $this->getRequest()->wasPosted() ) {
-			$update = $this->getRequest()->getVal( 'extension' );
-			if ( $update ) {
-				if( $this->updateExtension( $update ) ) {
-					$out->redirect(
-						$this->getFullTitle()->getFullURL(
-							'r=' . $update . ' has been updated successfully!'
-						)
-					);
-				}else{
-					$out->redirect(
-						$this->getFullTitle()->getFullURL(
-							'r=' . $update . ' can not be updated automatically due conflicts, reverted!'
-						)
-					);
-				}
-				return;
-			}
-		}
-
-		$r = $this->getRequest()->getVal('r');
-		if( $r ) {
-			$out->addHTML( \Sanitizer::removeHTMLtags( $r ) );
-		}*/
-
 		$html = $this->renderHomepage();
 
 		$out->addHTML( $html );
@@ -104,7 +79,8 @@ class SpecialWikiExtensions extends SpecialPage {
 			];
 		}*/
 
-		$html = $tp->processTemplate( 'extensions', [] /*[ 'extensions' => $data ]*/ );
+		//$html = $tp->processTemplate( 'extensions', [] /*[ 'extensions' => $data ]*/ );
+		$html = "<div class='wikiextensions-wrapper'></div>";
 		return $html;
 	}
 

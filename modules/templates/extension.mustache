@@ -6,7 +6,7 @@
 		<td>{{ git.local_commit_short }} - {{ git.remote_commit_short }}</td>
 		<td>
 			{{# can_pull }}
-				<div class="update-extension-button" data-extension="{{ name }}">⇩ Update</div>
+				<div class="update-extension-button" data-extension="{{ name }}">⇩ {{ _update }}</div>
 			{{/ can_pull}}
 			{{^ can_pull }}
 				<span class="wikiextensions-status-{{status}}"></span>
@@ -16,7 +16,7 @@
 	{{/is_git}}
 	{{^ is_git }}
 		<td colspan="3">
-			Not a Git repository!
+			{{ _notgit }}
 		</td>
 	{{/is_git}}
 </tr>

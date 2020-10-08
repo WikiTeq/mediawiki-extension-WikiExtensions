@@ -5,6 +5,7 @@ namespace WikiExtensions;
 use Cz\Git\GitRepository;
 use Cz\Git\GitException;
 use ExtensionRegistry;
+use Status;
 
 class WikiExtensions {
 
@@ -13,7 +14,7 @@ class WikiExtensions {
 	private $things;
 
 	public static function getInstance() {
-		if( self::$instance === null ) {
+		if ( self::$instance === null ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -35,12 +36,12 @@ class WikiExtensions {
 	public function getExtension( $extensionName ) {
 
 		// Bow out quickly in case of a wrong extension name
-		if( !array_key_exists( $extensionName, $this->things ) ) {
+		if ( !array_key_exists( $extensionName, $this->things ) ) {
 			return null;
 		}
 
 		// Get the extension directory
-		$extension = $this->things[ $extensionName ];
+		$extension = $this->things[$extensionName];
 		$path = dirname( $extension['path'] );
 
 		// Form default answer
@@ -64,7 +65,7 @@ class WikiExtensions {
 		];
 
 		// Check if .git dir exists and bow out if it's not
-		if( !file_exists( $path . '/.git' ) ) {
+		if ( !file_exists( $path . '/.git' ) ) {
 			return $result;
 		}
 
@@ -77,7 +78,7 @@ class WikiExtensions {
 
 		$result['is_writable'] = (int)true;
 
-		if( file_exists( $path . '/.gitmodules' ) ) {
+		if ( file_exists( $path . '/.gitmodules' ) ) {
 			$result['has_submodules'] = (int)true;
 		}
 
@@ -94,13 +95,13 @@ class WikiExtensions {
 			$result['git']['local_commit_short'] = substr( $commit, 0, 7 );
 			// Check if we're in detached HEAD state, in such case
 			// we can't do pull because we're not tracking any remotes
-			if( strpos( $localBranch, 'detached' ) !== false ) {
+			if ( strpos( $localBranch, 'detached' ) !== false ) {
 				// HEAD is detached, bow out
 				return $result;
-			}else{
+			} else {
 				passthru( "GIT_SSH_COMMAND=\"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\"" );
 				// Fetch remote
-				$repo->fetch(null, [ '-q' ]);
+				$repo->fetch( null, [ '-q' ] );
 				// Get remote commit SHA
 				$res = $repo->execute( [
 					'rev-parse',
@@ -117,7 +118,7 @@ class WikiExtensions {
 			}
 
 			$result['has_uncommitted_changes'] = (int)$repo->hasChanges();
-			if( $result['has_uncommitted_changes'] ) {
+			if ( $result['has_uncommitted_changes'] ) {
 				$result['can_pull'] = (int)false;
 			}
 
@@ -135,50 +136,64 @@ class WikiExtensions {
 	/**
 	 * @param $extensionName
 	 *
-	 * @return bool|null
+	 * @return Status
 	 * @throws GitException
 	 */
 	public function updateExtension( $extensionName ) {
 
-		if( !array_key_exists( $extensionName, $this->things ) ) {
-			return null;
+		$status = Status::newGood();
+
+		if ( !array_key_exists( $extensionName, $this->things ) ) {
+			return $status;
 		}
 
-		$path = dirname( $this->things[ $extensionName ]['path'] );
+		$path = dirname( $this->things[$extensionName]['path'] );
 
 		try {
 			$repo = new GitRepository( $path );
 		}
 		catch ( GitException $e ) {
 			// We should not land here, not a repo
-			return false;
+			return Status::newFatal( $e->getMessage() );
 		}
 
+		// Pull
 		try {
-			// Pull changes
 			$repo->pull();
-			// Pull submodules
-			if( file_exists( $path . '/.gitmodules' ) ) {
-				$repo->execute([
-					'submodule',
-					'update'
-				]);
-			}
-			return true;
 		}
 		catch ( GitException $e ) {
-			// A conflict?
-			$repo->execute([
-				'merge',
-				'--abort'
-			]);
-			$repo->execute([
-				'reset',
-				'--keep',
-				'HEAD@{1}'
-			]);
-			return false;
+			// A merge conflict?
+			if ( $e->getCode() === 1 ) {
+				$repo->execute( [
+					'merge',
+					'--abort'
+				] );
+				$repo->execute( [
+					'reset',
+					'--keep',
+					'HEAD@{1}'
+				] );
+			}
+			if ( $e->getCode() === 128 ) {
+				// Perms?
+			}
+			return Status::newFatal( $e->getMessage() );
 		}
+
+		// Pull submodules
+		if ( file_exists( $path . '/.gitmodules' ) ) {
+			try {
+				$repo->execute( [
+					'submodule',
+					'update'
+				] );
+			}
+			catch ( GitException $e ) {
+				return Status::newFatal( $e->getMessage() );
+			}
+		}
+
+		return $status;
 	}
 
 }

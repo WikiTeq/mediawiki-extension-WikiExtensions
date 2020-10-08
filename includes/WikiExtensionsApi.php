@@ -19,7 +19,7 @@ class WikiExtensionsApi extends ApiBase {
 		$this->formattedData = [
 			'status' => 'FAIL'
 		];
-		switch ($action) {
+		switch ( $action ) {
 			case 'list':
 				$this->doList();
 				break;
@@ -30,41 +30,42 @@ class WikiExtensionsApi extends ApiBase {
 				$this->updateExtension( $params['extension'] );
 				break;
 		}
-		$this->getResult()->addValue(
-			null, $this->getModulePath(), $this->formattedData
-		);
+		$this->getResult()->addValue( null, $this->getModulePath(), $this->formattedData );
 	}
 
 	private function doList() {
-		if( $this->getUser()->isAllowed( 'wikiextensions_view' ) || $this->isWhitelisted() ) {
+		if ( $this->getUser()->isAllowed( 'wikiextensions_view' ) || $this->isWhitelisted() ) {
 			$this->formattedData['extensions'] = WikiExtensions::getInstance()->getExtensions();
 			$this->formattedData['status'] = 'OK';
-		}else{
+		} else {
 			$this->formattedData['status'] = 'FAIL';
 		}
 	}
 
 	private function doExtension( $extension ) {
-		if( $this->getUser()->isAllowed( 'wikiextensions_view' ) || $this->isWhitelisted() ) {
-			$this->formattedData['extension'] = WikiExtensions::getInstance()->getExtension( $extension );
+		if ( $this->getUser()->isAllowed( 'wikiextensions_view' ) || $this->isWhitelisted() ) {
+			$this->formattedData['extension'] = WikiExtensions::getInstance()
+				->getExtension( $extension );
 			$this->formattedData['status'] = 'OK';
-		}else{
+		} else {
 			$this->formattedData['status'] = 'FAIL';
 		}
 	}
 
 	private function updateExtension( $extension ) {
-		if( $this->getUser()->isAllowed('wikiextensions_update') || $this->isWhitelisted() ) {
+		if ( $this->getUser()->isAllowed( 'wikiextensions_update' ) || $this->isWhitelisted() ) {
 			$result = WikiExtensions::getInstance()->updateExtension( $extension );
-			$this->formattedData['status'] = $result ? 'OK' : 'FAIL';
-			$this->formattedData['extension'] = WikiExtensions::getInstance()->getExtension( $extension );
+			$this->formattedData['status'] = $result->isGood() ? 'OK' : $result->getMessage()
+				->getKey();
+			$this->formattedData['extension'] = WikiExtensions::getInstance()
+				->getExtension( $extension );
 		}
 	}
 
 	private function isWhitelisted() {
 		global $wgWikiExtensionsAllowedIP;
-		if( $this->getUser()->isAnon() && User::isIP( $this->getUser()->getName() ) ) {
-			if( in_array( $this->getUser()->getName(), $wgWikiExtensionsAllowedIP ) ) {
+		if ( $this->getUser()->isAnon() && User::isIP( $this->getUser()->getName() ) ) {
+			if ( in_array( $this->getUser()->getName(), $wgWikiExtensionsAllowedIP ) ) {
 				return true;
 			}
 		}

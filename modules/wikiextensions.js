@@ -52,6 +52,11 @@
 		extension.status = status;
 		extension.message = message;
 
+		$.extend( extension, {
+			_update: mw.msg('wikiextensions-special-update'),
+			_notgit: mw.msg('wikiextensions-special-not-git')
+		});
+
 		html = this.templateItem.render( extension );
 		$( html ).find( '.update-extension-button' ).bind( 'click', this.onUpdateClicked.bind( this ) );
 		return html;
@@ -69,14 +74,24 @@
 			do: 'update',
 			extension: extension
 		} ).done( function ( data ) {
+			$( event.target ).removeClass( 'btn-loading' );
 			this.onUpdateResult( data, extension );
+		}.bind( this ) ).fail( function ( code, error ) {
+			$( event.target ).removeClass( 'btn-loading' );
+			this.onFailResult( code, error.error, extension );
 		}.bind( this ) );
+	};
+
+	WikiExtensions.prototype.onFailResult = function ( code, error, extension ) {
+		console.log( extension, code, error );
+		alert( code + "\n" + error.info );
 	};
 
 	WikiExtensions.prototype.onUpdateResult = function ( data, extension ) {
 		// TODO: rework and do some fallback to initial state for the row on error
 		if ( data.wikiextensions.status !== 'OK' ) {
 			alert( 'Something gone wrong, unable to update the extension. Changes were reverted.' );
+			console.log( data.wikiextensions.status );
 			return;
 		}
 		var row = this.$element.find( 'tr[data-extension="' + extension + '"]' );
