@@ -47,7 +47,7 @@
 	};
 
 	WikiExtensions2.prototype.onDataLoaded = function ( data ) {
-		var self = this;
+		var self = this, statusLine;
 		data.wikiextensions.extensions.map( function ( extension ) {
 			if ( !extension.is_git ) {
 				return;
@@ -89,11 +89,18 @@
 				expanded: false,
 				classes: [ 'extension-name' ]
 			} );
-			var statusLine = new OO.ui.MessageWidget( {
-				type: self.getStatus( extension ),
-				inline: true,
-				label: self.getMessage( extension )
-			} );
+
+			if ( OO.ui.hasOwnProperty('MessageWidget') ) {
+				statusLine = new OO.ui.MessageWidget( {
+					type: self.getStatus( extension ),
+					inline: true,
+					label: self.getMessage( extension )
+				} );
+			}else{
+				statusLine = new OO.ui.LabelWidget( {
+					label: self.getMessage( extension )
+				} );
+			}
 
 			var layoutItems = [
 				InfoStack,
