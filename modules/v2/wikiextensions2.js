@@ -147,6 +147,8 @@
 
 				}, function ( code, error ) {
 					panel.$element.removeClass( 'loading-row' );
+					statusLine.toggle( true );
+					button.toggle( false );
 					if ( OO.ui.hasOwnProperty('MessageWidget') ) {
 						statusLine.setType( 'error' );
 					}
