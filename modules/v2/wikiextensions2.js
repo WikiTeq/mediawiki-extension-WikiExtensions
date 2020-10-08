@@ -10,7 +10,9 @@
 	};
 
 	WikiExtensions2.prototype.init = function () {
-		var self = this, notice = $('<p><strong>Note:</strong><br>Only extensions installed from GIT are listed below</p>');
+		var self = this, notice = {
+			$element: $('<p><strong>Note:</strong><br>Only extensions installed from GIT are listed below</p>')
+		};
 
 		if( typeof OO.ui.MessageWidget !== 'undefined' ) {
 			notice = new OO.ui.MessageWidget( {
