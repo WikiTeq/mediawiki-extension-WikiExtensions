@@ -14,7 +14,7 @@
 			$element: $('<p><strong>Note:</strong><br>Only extensions installed from GIT are listed below</p>')
 		};
 
-		if( typeof OO.ui.MessageWidget !== 'undefined' ) {
+		if ( OO.ui.hasOwnProperty('MessageWidget') ) {
 			notice = new OO.ui.MessageWidget( {
 				type: 'notice',
 				label: new OO.ui.HtmlSnippet( '<strong>Note:</strong><br>Only extensions installed from GIT are listed below' )
