@@ -47,8 +47,10 @@
 	};
 
 	WikiExtensions2.prototype.onDataLoaded = function ( data ) {
-		var self = this, statusLine;
+		var self = this;
 		data.wikiextensions.extensions.map( function ( extension ) {
+			var statusLine;
+
 			if ( !extension.is_git ) {
 				return;
 			}
