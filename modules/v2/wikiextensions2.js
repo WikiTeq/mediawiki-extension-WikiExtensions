@@ -139,7 +139,9 @@
 						return;
 					}
 
-					statusLine.setType( 'success' );
+					if ( OO.ui.hasOwnProperty('MessageWidget') ) {
+						statusLine.setType( 'success' );
+					}
 					statusLine.setLabel( 'Updated successfully!' );
 					InfoLine.setLabel( self.getContentString( data.wikiextensions.extension ) );
 
