@@ -11,13 +11,13 @@
 
 	WikiExtensions2.prototype.init = function () {
 		var self = this, notice = {
-			$element: $('<p><strong>Note:</strong><br>Only extensions installed from GIT are listed below</p>')
+			$element: $('<p><strong>Note:</strong><br>Only extensions installed from GIT and loaded via manifest are listed below</p>')
 		};
 
 		if ( OO.ui.hasOwnProperty('MessageWidget') ) {
 			notice = new OO.ui.MessageWidget( {
 				type: 'notice',
-				label: new OO.ui.HtmlSnippet( '<strong>Note:</strong><br>Only extensions installed from GIT are listed below' )
+				label: new OO.ui.HtmlSnippet( '<strong>Note:</strong><br>Only extensions installed from GIT and loaded via manifest are listed below' )
 			} );
 		}
 
