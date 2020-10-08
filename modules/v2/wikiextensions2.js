@@ -10,12 +10,15 @@
 	};
 
 	WikiExtensions2.prototype.init = function () {
-		var self = this;
+		var self = this, notice = $('<p><strong>Note:</strong><br>Only extensions installed from GIT are listed below</p>');
 
-		var notice = new OO.ui.MessageWidget( {
-			type: 'notice',
-			label: new OO.ui.HtmlSnippet( '<strong>Note:</strong><br>Only extensions installed from GIT are listed below' )
-		} );
+		if( typeof OO.ui.MessageWidget !== 'undefined' ) {
+			notice = new OO.ui.MessageWidget( {
+				type: 'notice',
+				label: new OO.ui.HtmlSnippet( '<strong>Note:</strong><br>Only extensions installed from GIT are listed below' )
+			} );
+		}
+
 		var fieldset = new OO.ui.FieldsetLayout();
 		var progressBar = new OO.ui.ProgressBarWidget();
 		fieldset.addItems( [
