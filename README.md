@@ -5,6 +5,8 @@ The extension allows to manage extensions installed via GIT - it provides
 a special page and an API endpoint to list available updates and perform
 upgrades via `git pull`.
 
+<img width="1089" alt="image" src="https://user-images.githubusercontent.com/592009/154856047-b7ce6253-20c2-40cf-8616-94ab2ba2acb6.png">
+
 Extensions installed without GIT are not supported and being ignored.
 
 Requirements
