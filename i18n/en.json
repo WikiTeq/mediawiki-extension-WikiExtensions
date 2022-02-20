@@ -3,6 +3,16 @@
 	"wikiextensions-special-extensions-title": "Extensions management",
 	"wikiextensions-special-extensions-desc": "Allows to manage git-installed extensions",
 	"wikiextensions-special-update": "Update",
+	"wikiextensions-special-details": "See details",
+	"wikiextensions-special-update-to": "Update to $1",
+	"wikiextensions-special-msg-no-updates": "No updates available",
+	"wikiextensions-special-msg-has_updates": "No remote set, probably HEAD is detached",
+	"wikiextensions-special-msg-has_uncommitted_changes": "Has uncommitted changes",
+	"wikiextensions-special-msg-remote_commit": "No remotes found or detached",
+	"wikiextensions-special-msg-is_writable": "Directory is not writable",
+	"wikiextensions-special-loading": "Fetching extensions statuses, please wait..",
 	"wikiextensions-api-error-unknown": "Something gone wrong, unable to update the extension. Changes were reverted.",
-	"wikiextensions-special-not-git": "Not a Git repository!"
+	"wikiextensions-special-not-git": "Not a Git repository!",
+	"wikiextensions-special-not-installed": "Cz\\Git\\GitRepository class is missing, please check if required composer dependencies are installed",
+	"wikiextensions-special-note-git": "<p><strong>Note:</strong> only extensions/skins installed from git and loaded via extension.json  are listed below</p>"
 }

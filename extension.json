@@ -29,8 +29,8 @@
 				"style.less"
 			],
 			"scripts": [
-				"v2/wikiextensions2.js",
-				"v2/script.js"
+				"wikiextensions2.js",
+				"script.js"
 			],
 			"templates": {
 				"extension.mustache": "templates/extension.mustache",
@@ -39,7 +39,16 @@
 			"messages": [
 				"wikiextensions-special-update",
 				"wikiextensions-api-error-unknown",
-				"wikiextensions-special-not-git"
+				"wikiextensions-special-not-git",
+				"wikiextensions-special-note-git",
+				"wikiextensions-special-msg-no-updates",
+				"wikiextensions-special-msg-has_updates",
+				"wikiextensions-special-msg-has_uncommitted_changes",
+				"wikiextensions-special-msg-remote_commit",
+				"wikiextensions-special-msg-is_writable",
+				"wikiextensions-special-loading",
+				"wikiextensions-special-update-to",
+				"wikiextensions-special-details"
 			],
 			"dependencies": [
 				"oojs",
@@ -58,11 +67,11 @@
 	},
 	"AutoloadClasses": {
 		"WikiExtensions\\WikiExtensions": "includes/WikiExtensions.php",
-		"WikiExtensions\\SpecialWikiExtensions": "includes/SpecialWikiExtensions.php",
+		"WikiExtensions\\SpecialExtensions": "includes/SpecialExtensions.php",
 		"WikiExtensions\\WikiExtensionsApi": "includes/WikiExtensionsApi.php"
 	},
 	"SpecialPages": {
-		"WikiExtensions": "WikiExtensions\\SpecialWikiExtensions"
+		"Extensions": "WikiExtensions\\SpecialExtensions"
 	},
 	"APIModules": {
 		"wikiextensions": "WikiExtensions\\WikiExtensionsApi"

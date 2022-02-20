@@ -8,22 +8,28 @@ use ExtensionRegistry;
 use SpecialPage;
 use TemplateParser;
 
-class SpecialWikiExtensions extends SpecialPage {
+class SpecialExtensions extends SpecialPage {
 
-	public function __construct( $name = 'WikiExtensions' ) {
+	public function __construct( $name = 'Extensions' ) {
 		parent::__construct( $name );
 	}
 
 	public function execute( $param = null ) {
 
-		if( !$this->getUser()->isAllowed( 'wikiextensions_view' ) ) {
+		$out = $this->getOutput();
+		$out->setPageTitle( wfMessage( 'wikiextensions-special-extensions-title' ) );
+
+		if ( !$this->getUser()->isAllowed( 'wikiextensions_view' ) ) {
 			$this->displayRestrictionError();
-			return;
+			return false;
 		}
 
-		$out = $this->getOutput();
+		if ( !class_exists( 'Cz\Git\GitRepository' ) ) {
+			$out->addHTML( wfMessage( 'wikiextensions-special-not-installed' )->text() );
+			return false;
+		}
+
 		$out->addModules( 'ext.wikiextensions.special' );
-		$out->setPageTitle( wfMessage( 'wikiextensions-special-extensions-title' ) );
 
 		$html = $this->renderHomepage();
 
@@ -32,13 +38,12 @@ class SpecialWikiExtensions extends SpecialPage {
 	}
 
 	private function updateExtension( $extension ) {
-		$r = ExtensionRegistry::getInstance()->getAllThings()[ $extension ];
+		$r = ExtensionRegistry::getInstance()->getAllThings()[$extension];
 		$path = dirname( $r['path'] );
 
 		try {
 			$repo = new GitRepository( $path );
-		}
-		catch ( GitException $e ) {
+		} catch ( GitException $e ) {
 			// We should not land here, not a repo
 			return false;
 		}
@@ -46,18 +51,17 @@ class SpecialWikiExtensions extends SpecialPage {
 		try {
 			$repo->pull();
 			return true;
-		}
-		catch ( GitException $e ) {
+		} catch ( GitException $e ) {
 			// A conflict?
-			$repo->execute([
+			$repo->execute( [
 				'merge',
 				'--abort'
-			]);
-			$repo->execute([
+			] );
+			$repo->execute( [
 				'reset',
 				'--keep',
 				'HEAD@{1}'
-			]);
+			] );
 			return false;
 		}
 
@@ -97,7 +101,7 @@ class SpecialWikiExtensions extends SpecialPage {
 		$path = dirname( $extension['path'] );
 		// create repo object
 
-		if( file_exists( $path . '/.git' ) ) {
+		if ( file_exists( $path . '/.git' ) ) {
 			$isGit = true;
 
 			if ( is_writable( $path . '/.git' ) ) {
@@ -127,8 +131,7 @@ class SpecialWikiExtensions extends SpecialPage {
 
 					$changesLocal = $repo->hasChanges();
 
-				}
-				catch ( GitException $e ) {
+				} catch ( GitException $e ) {
 					// Could be not a git repo, so just skip
 				}
 

@@ -6,26 +6,59 @@
 	var WikiExtensions2 = function WikiExtensions( $element ) {
 		this.$element = $element;
 		this.api = new mw.Api();
+		this.wm = new OO.ui.WindowManager();
 		this.init();
+	};
+
+	WikiExtensions2.prototype.PopupDialog = function( config ) {
+		WikiExtensions2.prototype.PopupDialog.super.call( this, config );
+	}
+
+	OO.inheritClass( WikiExtensions2.prototype.PopupDialog, OO.ui.Dialog );
+	WikiExtensions2.prototype.PopupDialog.static.name = 'popupDialog';
+
+	WikiExtensions2.prototype.PopupDialog.prototype.initialize = function () {
+		WikiExtensions2.prototype.PopupDialog.super.prototype.initialize.call( this );
+		var self = this;
+		this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
+		this.content.$element.html( '<pre></pre>' );
+		var closeButton = new OO.ui.ButtonWidget( {
+			label: OO.ui.msg( 'ooui-dialog-process-dismiss' )
+		} );
+		closeButton.on( 'click', function () {
+			self.close();
+		} );
+		this.content.$element.append( closeButton.$element );
+		this.$body.append( this.content.$element );
+	};
+
+	WikiExtensions2.prototype.PopupDialog.prototype.getBodyHeight = function () {
+		return this.content.$element.outerHeight( true );
 	};
 
 	WikiExtensions2.prototype.init = function () {
 		var self = this, notice = {
-			$element: $('<p><strong>Note:</strong><br>Only extensions installed from GIT and loaded via manifest are listed below</p>')
+			$element: $( mw.msg( 'wikiextensions-special-note-git' ) )
 		};
 
-		if ( OO.ui.hasOwnProperty('MessageWidget') ) {
+		if ( OO.ui.hasOwnProperty( 'MessageWidget' ) ) {
 			notice = new OO.ui.MessageWidget( {
 				type: 'notice',
-				label: new OO.ui.HtmlSnippet( '<strong>Note:</strong><br>Only extensions installed from GIT and loaded via manifest are listed below' )
+				label: new OO.ui.HtmlSnippet( mw.msg( 'wikiextensions-special-note-git' ) )
 			} );
 		}
+
+		this.popupDialog = new WikiExtensions2.prototype.PopupDialog( {
+			size: 'larger'
+		} );
+		$( document.body ).append( this.wm.$element );
+		this.wm.addWindows( [ this.popupDialog ] );
 
 		var fieldset = new OO.ui.FieldsetLayout();
 		var progressBar = new OO.ui.ProgressBarWidget();
 		fieldset.addItems( [
 			new OO.ui.FieldLayout( progressBar, {
-				label: 'Fetching extensions meta-data, please wait..',
+				label: mw.msg( 'wikiextensions-special-loading' ),
 				align: 'top'
 			} )
 		] );
@@ -55,7 +88,7 @@
 				return;
 			}
 			var button = new OO.ui.ButtonWidget( {
-				label: 'Update',
+				label: mw.msg( 'wikiextensions-special-update' ),
 				icon: 'reload',
 				title: 'Update',
 				flags: [ 'primary', 'progressive' ]
@@ -64,6 +97,10 @@
 			var InfoLine = new OO.ui.LabelWidget( {
 				label: updateContentString,
 				classes: [ 'extension-details-title' ]
+			} );
+			var detailsLink = new OO.ui.LabelWidget( {
+				label: mw.msg( 'wikiextensions-special-details' ),
+				classes: [ 'wikiextensions-details-link' ]
 			} );
 			var InfoStack = new OO.ui.StackLayout( {
 				items: [
@@ -92,13 +129,13 @@
 				classes: [ 'extension-name' ]
 			} );
 
-			if ( OO.ui.hasOwnProperty('MessageWidget') ) {
+			if ( OO.ui.hasOwnProperty( 'MessageWidget' ) ) {
 				statusLine = new OO.ui.MessageWidget( {
 					type: self.getStatus( extension ),
 					inline: true,
 					label: self.getMessage( extension )
 				} );
-			}else{
+			} else {
 				statusLine = new OO.ui.LabelWidget( {
 					label: self.getMessage( extension )
 				} );
@@ -107,13 +144,28 @@
 			var layoutItems = [
 				InfoStack,
 				button,
-				statusLine
+				statusLine,
+				detailsLink
 			];
+
+			detailsLink.$element.on('click', function(){
+				self.popupDialog.content.$element.find('pre').html( extension.git.status.join("\n") );
+				self.wm.openWindow( self.popupDialog );
+			});
+
+			detailsLink.toggle(false);
 
 			if ( extension.can_pull ) {
 				statusLine.toggle( false );
+				button.setLabel(
+					mw.msg( 'wikiextensions-special-update-to',
+						extension.git.remote_commit_short
+					) );
 			} else {
 				button.toggle( false );
+				if ( extension.has_uncommitted_changes || extension.has_updates || extension.remote_commit ) {
+					detailsLink.toggle( true );
+				}
 			}
 			var layout = new OO.ui.HorizontalLayout( {
 				items: layoutItems,
@@ -132,16 +184,14 @@
 					button.toggle( false );
 					panel.$element.removeClass( 'loading-row' );
 					statusLine.toggle( true );
-					console.log( data );
 
 					if ( data.wikiextensions.status !== 'OK' ) {
-						console.log( data.wikiextensions.status );
 						statusLine.setType( 'error' );
 						statusLine.setLabel( data.wikiextensions.status );
 						return;
 					}
 
-					if ( OO.ui.hasOwnProperty('MessageWidget') ) {
+					if ( OO.ui.hasOwnProperty( 'MessageWidget' ) ) {
 						statusLine.setType( 'success' );
 					}
 					statusLine.setLabel( 'Updated successfully!' );
@@ -151,18 +201,17 @@
 					panel.$element.removeClass( 'loading-row' );
 					statusLine.toggle( true );
 					button.toggle( false );
-					if ( OO.ui.hasOwnProperty('MessageWidget') ) {
+					if ( OO.ui.hasOwnProperty( 'MessageWidget' ) ) {
 						statusLine.setType( 'error' );
 					}
 					statusLine.setLabel( error );
-					console.log( code, error );
 				} );
 			} );
 			this.stackLayout.addItems( [ panel ] );
 		} );
 	}
 
-	WikiExtensions2.prototype.getContentString = function( extension ) {
+	WikiExtensions2.prototype.getContentString = function ( extension ) {
 		var updateContentString = extension.version || '';
 
 		updateContentString += ' ' + extension.git.branch || extension.git.local_commit_short;
@@ -170,8 +219,6 @@
 		if ( extension.git.local_commit_short && extension.git.remote_commit_short ) {
 			updateContentString += ' ( ';
 			updateContentString += extension.git.local_commit_short;
-			updateContentString += ' -> ';
-			updateContentString += extension.git.remote_commit_short;
 			updateContentString += ' )';
 		}
 
@@ -210,19 +257,19 @@
 	}
 
 	WikiExtensions2.prototype.getMessage = function ( extension ) {
-		var message = 'No updates available';
+		var message = mw.msg( 'wikiextensions-special-msg-no-updates' );
 		if ( !extension.can_pull ) {
 			if ( extension.has_updates ) {
-				message = 'No remote set, probably HEAD is detached';
+				message = mw.msg( 'wikiextensions-special-msg-has_updates' );
 			}
 			if ( extension.has_uncommitted_changes ) {
-				message = 'Has uncommitted changes';
+				message = mw.msg( 'wikiextensions-special-msg-has_uncommitted_changes' );
 			}
 			if ( !extension.git.remote_commit ) {
-				message = 'No remotes found or detached';
+				message = mw.msg( 'wikiextensions-special-msg-remote_commit' );
 			}
 			if ( !extension.is_writable ) {
-				message = 'Directory is not writable';
+				message = mw.msg( 'wikiextensions-special-msg-is_writable' );
 			}
 		}
 		return message;

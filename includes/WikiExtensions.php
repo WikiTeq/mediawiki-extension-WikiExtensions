@@ -9,10 +9,16 @@ use Status;
 
 class WikiExtensions {
 
+	/** @var WikiExtensions */
 	private static $instance = null;
+	/** @var ExtensionRegistry */
 	private $extensionRegistry;
+	/** @var array[] */
 	private $things;
 
+	/**
+	 * @return WikiExtensions
+	 */
 	public static function getInstance() {
 		if ( self::$instance === null ) {
 			self::$instance = new self();
@@ -20,11 +26,17 @@ class WikiExtensions {
 		return self::$instance;
 	}
 
+	/**
+	 * @constructor
+	 */
 	public function __construct() {
 		$this->extensionRegistry = ExtensionRegistry::getInstance();
 		$this->things = $this->extensionRegistry->getAllThings();
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getExtensions() {
 		$data = [];
 		foreach ( $this->things as $key => $thing ) {
@@ -33,6 +45,11 @@ class WikiExtensions {
 		return $data;
 	}
 
+	/**
+	 * @param $extensionName
+	 *
+	 * @return array|null
+	 */
 	public function getExtension( $extensionName ) {
 
 		// Bow out quickly in case of a wrong extension name
@@ -93,6 +110,7 @@ class WikiExtensions {
 			$commit = $repo->getLastCommitId();
 			$result['git']['local_commit'] = $commit;
 			$result['git']['local_commit_short'] = substr( $commit, 0, 7 );
+			$result['git']['status'] = $repo->execute( 'status' );
 			// Check if we're in detached HEAD state, in such case
 			// we can't do pull because we're not tracking any remotes
 			if ( strpos( $localBranch, 'detached' ) !== false ) {

@@ -23,7 +23,7 @@ Setup
 Usage
 ---
 
-* Navigate to `Special:WikiExtensions` to see extensions updates and do upgrades
+* Navigate to `Special:Extensions` to see extensions updates and do upgrades
 * Use `wikiextensions` API endpoint to list extensions updates and do upgrades
 
 API
