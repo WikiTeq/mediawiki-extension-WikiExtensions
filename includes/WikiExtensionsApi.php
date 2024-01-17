@@ -4,7 +4,8 @@ namespace WikiExtensions;
 
 use ApiBase;
 use ApiUsageException;
-use User;
+use Wikimedia\IPUtils;
+use Wikimedia\ParamValidator\ParamValidator;
 
 class WikiExtensionsApi extends ApiBase {
 
@@ -64,7 +65,7 @@ class WikiExtensionsApi extends ApiBase {
 
 	private function isWhitelisted() {
 		global $wgWikiExtensionsAllowedIP;
-		if ( $this->getUser()->isAnon() && User::isIP( $this->getUser()->getName() ) ) {
+		if ( $this->getUser()->isAnon() && IPUtils::isIPAddress( $this->getUser()->getName() ) ) {
 			if ( in_array( $this->getUser()->getName(), $wgWikiExtensionsAllowedIP ) ) {
 				return true;
 			}
@@ -75,11 +76,11 @@ class WikiExtensionsApi extends ApiBase {
 	public function getAllowedParams() {
 		$params = [
 			'do' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_REQUIRED => true
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_REQUIRED => true
 			],
 			'extension' => [
-				ApiBase::PARAM_TYPE => 'string'
+				ParamValidator::PARAM_TYPE => 'string'
 			]
 		];
 		return $params + parent::getAllowedParams();

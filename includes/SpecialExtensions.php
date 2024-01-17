@@ -2,11 +2,8 @@
 
 namespace WikiExtensions;
 
-use Cz\Git\GitRepository;
-use Cz\Git\GitException;
-use ExtensionRegistry;
+use PermissionsError;
 use SpecialPage;
-use TemplateParser;
 
 class SpecialExtensions extends SpecialPage {
 
@@ -14,19 +11,24 @@ class SpecialExtensions extends SpecialPage {
 		parent::__construct( $name );
 	}
 
-	public function execute( $param = null ) {
-
+	/**
+	 * @param string|null $subPage
+	 * @return void
+	 * @throws PermissionsError
+	 */
+	public function execute( $subPage = null ) {
 		$out = $this->getOutput();
 		$out->setPageTitle( wfMessage( 'wikiextensions-special-extensions-title' ) );
 
 		if ( !$this->getUser()->isAllowed( 'wikiextensions_view' ) ) {
+			// it throws the PermissionsError exception
 			$this->displayRestrictionError();
-			return false;
 		}
 
-		if ( !class_exists( 'Cz\Git\GitRepository' ) ) {
-			$out->addHTML( wfMessage( 'wikiextensions-special-not-installed' )->text() );
-			return false;
+		$GitRepositoryClassName = 'CzProject\\GitPhp\\GitRepository';
+		if ( !class_exists( $GitRepositoryClassName ) ) {
+			$out->addHTML( wfMessage( 'wikiextensions-special-not-installed', $GitRepositoryClassName )->text() );
+			return;
 		}
 
 		$out->addModules( 'ext.wikiextensions.special' );
@@ -34,43 +36,43 @@ class SpecialExtensions extends SpecialPage {
 		$html = $this->renderHomepage();
 
 		$out->addHTML( $html );
-
 	}
 
-	private function updateExtension( $extension ) {
-		$r = ExtensionRegistry::getInstance()->getAllThings()[$extension];
-		$path = dirname( $r['path'] );
-
-		try {
-			$repo = new GitRepository( $path );
-		} catch ( GitException $e ) {
-			// We should not land here, not a repo
-			return false;
-		}
-
-		try {
-			$repo->pull();
-			return true;
-		} catch ( GitException $e ) {
-			// A conflict?
-			$repo->execute( [
-				'merge',
-				'--abort'
-			] );
-			$repo->execute( [
-				'reset',
-				'--keep',
-				'HEAD@{1}'
-			] );
-			return false;
-		}
-
-	}
+//	private function updateExtension( $extension ) {
+//		$r = ExtensionRegistry::getInstance()->getAllThings()[$extension];
+//		$path = dirname( $r['path'] );
+//
+//		try {
+//			$repo = new GitRepository( $path );
+//		} catch ( GitException $e ) {
+//			// We should not land here, not a repo
+//			return false;
+//		}
+//
+//		try {
+//			$repo->pull();
+//			return true;
+//		} catch ( GitException $e ) {
+//			// A conflict?
+//			$repo->execute( [
+//				'merge',
+//				'--abort'
+//			] );
+//			$repo->execute( [
+//				'reset',
+//				'--keep',
+//				'HEAD@{1}'
+//			] );
+//			return false;
+//		}
+//
+//	}
 
 	private function renderHomepage() {
-		$tp = new TemplateParser( dirname( __FILE__ ) . '/../modules/templates', true );
-
-		$things = ExtensionRegistry::getInstance()->getAllThings();
+//		$cache = new EmptyBagOStuff();
+//		$tp = new TemplateParser( dirname( __FILE__ ) . '/../modules/templates', $cache );
+//
+//		$things = ExtensionRegistry::getInstance()->getAllThings();
 
 		/*$data = [];
 		foreach ( $things as $key => $thing ) {
@@ -88,67 +90,67 @@ class SpecialExtensions extends SpecialPage {
 		return $html;
 	}
 
-	private function fetchExtensionState( $extension ) {
-
-		$changesRemote = false;
-		$changesLocal = false;
-		$detached = false;
-		$localBranch = null;
-		$commit = null;
-		$writable = false;
-		$isGit = false;
-
-		$path = dirname( $extension['path'] );
-		// create repo object
-
-		if ( file_exists( $path . '/.git' ) ) {
-			$isGit = true;
-
-			if ( is_writable( $path . '/.git' ) ) {
-
-				$writable = true;
-
-				try {
-					$repo = new GitRepository( $path );
-					$repo->fetch();
-					$localBranch = $repo->getCurrentBranchName();
-
-					if ( strpos( $localBranch, 'HEAD detached' ) == false ) {
-						$commit = $repo->getLastCommitId();
-						$res = $repo->execute( [
-							'rev-parse',
-							$localBranch . '@{upstream}'
-						] );
-						$remoteCommit = $res[0];
-
-						if ( $remoteCommit != $commit ) {
-							$changesRemote = true;
-						}
-					} else {
-						// HEAD is detached
-						$detached = true;
-					}
-
-					$changesLocal = $repo->hasChanges();
-
-				} catch ( GitException $e ) {
-					// Could be not a git repo, so just skip
-				}
-
-			}
-
-		}
-
-		return [
-			'local' => $changesLocal,
-			'remote' => $changesRemote,
-			'detached' => $detached,
-			'branch' => $localBranch,
-			'commit' => $commit,
-			'can_write' => $writable,
-			'is_git' => $isGit
-		];
-
-	}
+//	private function fetchExtensionState( $extension ) {
+//
+//		$changesRemote = false;
+//		$changesLocal = false;
+//		$detached = false;
+//		$localBranch = null;
+//		$commit = null;
+//		$writable = false;
+//		$isGit = false;
+//
+//		$path = dirname( $extension['path'] );
+//		// create repo object
+//
+//		if ( file_exists( $path . '/.git' ) ) {
+//			$isGit = true;
+//
+//			if ( is_writable( $path . '/.git' ) ) {
+//
+//				$writable = true;
+//
+//				try {
+//					$repo = new GitRepository( $path );
+//					$repo->fetch();
+//					$localBranch = $repo->getCurrentBranchName();
+//
+//					if ( strpos( $localBranch, 'HEAD detached' ) == false ) {
+//						$commit = $repo->getLastCommitId();
+//						$res = $repo->execute( [
+//							'rev-parse',
+//							$localBranch . '@{upstream}'
+//						] );
+//						$remoteCommit = $res[0];
+//
+//						if ( $remoteCommit != $commit ) {
+//							$changesRemote = true;
+//						}
+//					} else {
+//						// HEAD is detached
+//						$detached = true;
+//					}
+//
+//					$changesLocal = $repo->hasChanges();
+//
+//				} catch ( GitException $e ) {
+//					// Could be not a git repo, so just skip
+//				}
+//
+//			}
+//
+//		}
+//
+//		return [
+//			'local' => $changesLocal,
+//			'remote' => $changesRemote,
+//			'detached' => $detached,
+//			'branch' => $localBranch,
+//			'commit' => $commit,
+//			'can_write' => $writable,
+//			'is_git' => $isGit
+//		];
+//
+//	}
 
 }

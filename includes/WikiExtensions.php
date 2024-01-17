@@ -2,8 +2,8 @@
 
 namespace WikiExtensions;
 
-use Cz\Git\GitRepository;
-use Cz\Git\GitException;
+use CzProject\GitPhp\GitException;
+use CzProject\GitPhp\GitRepository;
 use ExtensionRegistry;
 use Status;
 
@@ -64,7 +64,7 @@ class WikiExtensions {
 		// Form default answer
 		$result = [
 			'name' => $extensionName,
-			'version' => isset( $extension['version'] ) ? $extension['version'] : null,
+			'version' => $extension['version'] ?? null,
 			'is_writable' => (int)false,
 			'is_git' => (int)false,
 			'has_updates' => (int)false,
