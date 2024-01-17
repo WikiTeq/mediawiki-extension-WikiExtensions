@@ -12,7 +12,7 @@ Extensions installed without GIT are not supported and being ignored.
 Requirements
 ------------
 
-* Mediawiki 1.31+
+* Mediawiki 1.35+
 * Composer
 * Git 1.7+
 
