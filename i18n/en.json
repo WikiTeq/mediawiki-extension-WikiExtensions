@@ -13,6 +13,6 @@
 	"wikiextensions-special-loading": "Fetching extensions statuses, please wait..",
 	"wikiextensions-api-error-unknown": "Something gone wrong, unable to update the extension. Changes were reverted.",
 	"wikiextensions-special-not-git": "Not a Git repository!",
-	"wikiextensions-special-not-installed": "Cz\\Git\\GitRepository class is missing, please check if required composer dependencies are installed",
+	"wikiextensions-special-not-installed": "$1 class is missing, please check if required composer dependencies are installed",
 	"wikiextensions-special-note-git": "<p><strong>Note:</strong> only extensions/skins installed from git and loaded via extension.json  are listed below</p>"
 }
