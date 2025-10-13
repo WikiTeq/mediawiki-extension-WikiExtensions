@@ -1,7 +1,8 @@
-( function ( $, mw, OO ) {
+( function () {
 
 	/**
 	 * @constructor
+	 * @param {jQuery} $element
 	 */
 	var WikiExtensions2 = function WikiExtensions( $element ) {
 		this.$element = $element;
@@ -10,9 +11,9 @@
 		this.init();
 	};
 
-	WikiExtensions2.prototype.PopupDialog = function( config ) {
+	WikiExtensions2.prototype.PopupDialog = function ( config ) {
 		WikiExtensions2.prototype.PopupDialog.super.call( this, config );
-	}
+	};
 
 	OO.inheritClass( WikiExtensions2.prototype.PopupDialog, OO.ui.Dialog );
 	WikiExtensions2.prototype.PopupDialog.static.name = 'popupDialog';
@@ -21,7 +22,7 @@
 		WikiExtensions2.prototype.PopupDialog.super.prototype.initialize.call( this );
 		var self = this;
 		this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
-		this.content.$element.html( '<pre></pre>' );
+		this.content.$element.html( '<pre>' );
 		var closeButton = new OO.ui.ButtonWidget( {
 			label: OO.ui.msg( 'ooui-dialog-process-dismiss' )
 		} );
@@ -41,7 +42,7 @@
 			$element: $( mw.msg( 'wikiextensions-special-note-git' ) )
 		};
 
-		if ( OO.ui.hasOwnProperty( 'MessageWidget' ) ) {
+		if ( OO.ui.MessageWidget !== undefined ) {
 			notice = new OO.ui.MessageWidget( {
 				type: 'notice',
 				label: new OO.ui.HtmlSnippet( mw.msg( 'wikiextensions-special-note-git' ) )
@@ -81,7 +82,7 @@
 
 	WikiExtensions2.prototype.onDataLoaded = function ( data ) {
 		var self = this;
-		data.wikiextensions.extensions.map( function ( extension ) {
+		data.wikiextensions.extensions.forEach( function ( extension ) {
 			var statusLine;
 
 			if ( !extension.is_git ) {
@@ -129,7 +130,7 @@
 				classes: [ 'extension-name' ]
 			} );
 
-			if ( OO.ui.hasOwnProperty( 'MessageWidget' ) ) {
+			if ( OO.ui.MessageWidget !== undefined ) {
 				statusLine = new OO.ui.MessageWidget( {
 					type: self.getStatus( extension ),
 					inline: true,
@@ -148,12 +149,12 @@
 				detailsLink
 			];
 
-			detailsLink.$element.on('click', function(){
-				self.popupDialog.content.$element.find('pre').html( extension.git.status.join("\n") );
+			detailsLink.$element.on( 'click', function () {
+				self.popupDialog.content.$element.find( 'pre' ).html( extension.git.status.join( '\n' ) );
 				self.wm.openWindow( self.popupDialog );
-			});
+			} );
 
-			detailsLink.toggle(false);
+			detailsLink.toggle( false );
 
 			if ( extension.can_pull ) {
 				statusLine.toggle( false );
@@ -163,7 +164,10 @@
 					) );
 			} else {
 				button.toggle( false );
-				if ( extension.has_uncommitted_changes || extension.has_updates || extension.remote_commit ) {
+				if ( extension.has_uncommitted_changes ||
+					extension.has_updates ||
+					extension.remote_commit
+				) {
 					detailsLink.toggle( true );
 				}
 			}
@@ -179,29 +183,29 @@
 			button.on( 'click', function () {
 				panel.$element.addClass( 'loading-row' );
 				button.setDisabled( true );
-				self.UpdateClicked( extension, function ( data ) {
+				self.UpdateClicked( extension, function ( data2 ) {
 					button.setDisabled( false );
 					button.toggle( false );
 					panel.$element.removeClass( 'loading-row' );
 					statusLine.toggle( true );
 
-					if ( data.wikiextensions.status !== 'OK' ) {
+					if ( data2.wikiextensions.status !== 'OK' ) {
 						statusLine.setType( 'error' );
-						statusLine.setLabel( data.wikiextensions.status );
+						statusLine.setLabel( data2.wikiextensions.status );
 						return;
 					}
 
-					if ( OO.ui.hasOwnProperty( 'MessageWidget' ) ) {
+					if ( OO.ui.MessageWidget !== undefined ) {
 						statusLine.setType( 'success' );
 					}
 					statusLine.setLabel( 'Updated successfully!' );
-					InfoLine.setLabel( self.getContentString( data.wikiextensions.extension ) );
+					InfoLine.setLabel( self.getContentString( data2.wikiextensions.extension ) );
 
 				}, function ( code, error ) {
 					panel.$element.removeClass( 'loading-row' );
 					statusLine.toggle( true );
 					button.toggle( false );
-					if ( OO.ui.hasOwnProperty( 'MessageWidget' ) ) {
+					if ( OO.ui.MessageWidget !== undefined ) {
 						statusLine.setType( 'error' );
 					}
 					statusLine.setLabel( error );
@@ -209,7 +213,7 @@
 			} );
 			this.stackLayout.addItems( [ panel ] );
 		} );
-	}
+	};
 
 	WikiExtensions2.prototype.getContentString = function ( extension ) {
 		var updateContentString = extension.version || '';
@@ -223,7 +227,7 @@
 		}
 
 		return updateContentString;
-	}
+	};
 
 	WikiExtensions2.prototype.UpdateClicked = function ( extension, success, fail ) {
 		this.api.get( {
@@ -235,7 +239,7 @@
 		} ).fail( function ( code, error ) {
 			fail( code, error.error );
 		} );
-	}
+	};
 
 	WikiExtensions2.prototype.getStatus = function ( extension ) {
 		var status = 'success';
@@ -254,7 +258,7 @@
 			}
 		}
 		return status;
-	}
+	};
 
 	WikiExtensions2.prototype.getMessage = function ( extension ) {
 		var message = mw.msg( 'wikiextensions-special-msg-no-updates' );
@@ -273,8 +277,8 @@
 			}
 		}
 		return message;
-	}
+	};
 
 	window.WikiExtensions2 = WikiExtensions2;
 
-} )( jQuery, mediaWiki, OO );
+}() );

@@ -7,6 +7,7 @@ use SpecialPage;
 
 class SpecialExtensions extends SpecialPage {
 
+	/** @inheritDoc */
 	public function __construct( $name = 'Extensions' ) {
 		parent::__construct( $name );
 	}
@@ -18,7 +19,7 @@ class SpecialExtensions extends SpecialPage {
 	 */
 	public function execute( $subPage = null ) {
 		$out = $this->getOutput();
-		$out->setPageTitle( wfMessage( 'wikiextensions-special-extensions-title' ) );
+		$out->setPageTitle( $this->msg( 'wikiextensions-special-extensions-title' ) );
 
 		if ( !$this->getUser()->isAllowed( 'wikiextensions_view' ) ) {
 			// it throws the PermissionsError exception
@@ -27,7 +28,7 @@ class SpecialExtensions extends SpecialPage {
 
 		$GitRepositoryClassName = 'CzProject\\GitPhp\\GitRepository';
 		if ( !class_exists( $GitRepositoryClassName ) ) {
-			$out->addHTML( wfMessage( 'wikiextensions-special-not-installed', $GitRepositoryClassName )->text() );
+			$out->addWikiMsg( 'wikiextensions-special-not-installed', $GitRepositoryClassName );
 			return;
 		}
 

@@ -1,0 +1,16 @@
+{
+	"name": "WikiExtensions",
+	"private": true,
+	"scripts": {
+		"test": "npm run lint && npm run banana",
+		"lint": "npm run lint:styles && npm run lint:js",
+		"lint:js": "eslint --max-warnings 0 .",
+		"lint:styles": "stylelint modules/**/*.{vue,less,css}",
+		"banana": "npx grunt-banana-checker i18n/"
+	},
+	"devDependencies": {
+		"grunt-banana-checker": "0.13.0",
+		"stylelint-config-wikimedia": "0.18.0",
+		"eslint-config-wikimedia": "0.28.2"
+	}
+}

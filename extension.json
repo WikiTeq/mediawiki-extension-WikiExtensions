@@ -13,8 +13,12 @@
 	},
 	"MessagesDirs": {
 		"WikiExtensions": [
-			"i18n"
+			"i18n",
+			"i18n/api"
 		]
+	},
+	"ExtensionMessagesFiles": {
+		"WikiExtensionsAlias": "WikiExtensions.alias.php"
 	},
 	"Hooks": {},
 	"config": {
@@ -39,7 +43,6 @@
 			"messages": [
 				"wikiextensions-special-update",
 				"wikiextensions-api-error-unknown",
-				"wikiextensions-special-not-git",
 				"wikiextensions-special-note-git",
 				"wikiextensions-special-msg-no-updates",
 				"wikiextensions-special-msg-has_updates",

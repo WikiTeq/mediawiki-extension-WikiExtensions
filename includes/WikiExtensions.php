@@ -26,9 +26,6 @@ class WikiExtensions {
 		return self::$instance;
 	}
 
-	/**
-	 * @constructor
-	 */
 	public function __construct() {
 		$this->extensionRegistry = ExtensionRegistry::getInstance();
 		$this->things = $this->extensionRegistry->getAllThings();
@@ -46,12 +43,11 @@ class WikiExtensions {
 	}
 
 	/**
-	 * @param $extensionName
+	 * @param string $extensionName
 	 *
 	 * @return array|null
 	 */
 	public function getExtension( $extensionName ) {
-
 		// Bow out quickly in case of a wrong extension name
 		if ( !array_key_exists( $extensionName, $this->things ) ) {
 			return null;
@@ -117,9 +113,11 @@ class WikiExtensions {
 				// HEAD is detached, bow out
 				return $result;
 			} else {
+				// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.passthru
 				passthru( "GIT_SSH_COMMAND=\"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\"" );
 				// Fetch remote
-				$repo->fetch( null, [ '-q' ] );
+				// Work around https://github.com/czproject/git-php/issues/77
+				$repo->run( 'fetch', [ '-q' ] );
 				// Get remote commit SHA
 				$res = $repo->execute( [
 					'rev-parse',
@@ -152,13 +150,12 @@ class WikiExtensions {
 	}
 
 	/**
-	 * @param $extensionName
+	 * @param string $extensionName
 	 *
 	 * @return Status
 	 * @throws GitException
 	 */
 	public function updateExtension( $extensionName ) {
-
 		$status = Status::newGood();
 
 		if ( !array_key_exists( $extensionName, $this->things ) ) {
@@ -177,7 +174,8 @@ class WikiExtensions {
 
 		// Pull
 		try {
-			$repo->pull();
+			// Work around https://github.com/czproject/git-php/issues/77
+			$repo->run( 'pull' );
 		}
 		catch ( GitException $e ) {
 			// A merge conflict?
