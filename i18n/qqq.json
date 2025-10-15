@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Daniel Scherzer"
+		]
+	},
+	"wikiextensions-desc": "{{desc|name=WikiExtensions}}",
+	"wikiextensions-special-extensions-title": "special page title",
+	"wikiextensions-special-extensions-desc": "special page description",
+	"wikiextensions-special-update": "Button label",
+	"wikiextensions-special-details": "Button to open popup with details",
+	"wikiextensions-special-update-to": "Button to update extension\n\nParameters:\n* $1 - new commit",
+	"wikiextensions-special-msg-no-updates": "Message when extension is already up to date",
+	"wikiextensions-special-msg-has_updates": "Message on [[Special:Extensions]]",
+	"wikiextensions-special-msg-has_uncommitted_changes": "Warning shown when extension has local changes",
+	"wikiextensions-special-msg-remote_commit": "Message when extension cannot be managed",
+	"wikiextensions-special-msg-is_writable": "Message shown when extension cannot be managed",
+	"wikiextensions-special-loading": "Message shown while extensions are loading",
+	"wikiextensions-api-error-unknown": "Error message",
+	"wikiextensions-special-not-installed": "Error when composer dependencies are missing",
+	"wikiextensions-special-note-git": "Note at the top of [[Special:Extensions]]",
+	"action-wikiextensions_update": "{{doc-action|wikiextensions_update}}",
+	"right-wikiextensions_update": "{{doc-right|wikiextensions_update}}",
+	"action-wikiextensions_view": "{{doc-action|wikiextensions_view}}",
+	"right-wikiextensions_view": "{{doc-right|wikiextensions_view}}"
+}

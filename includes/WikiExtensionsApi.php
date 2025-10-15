@@ -9,6 +9,7 @@ use Wikimedia\ParamValidator\ParamValidator;
 
 class WikiExtensionsApi extends ApiBase {
 
+	/** @var array */
 	private $formattedData;
 
 	/**
@@ -43,6 +44,9 @@ class WikiExtensionsApi extends ApiBase {
 		}
 	}
 
+	/**
+	 * @param string $extension
+	 */
 	private function doExtension( $extension ) {
 		if ( $this->getUser()->isAllowed( 'wikiextensions_view' ) || $this->isWhitelisted() ) {
 			$this->formattedData['extension'] = WikiExtensions::getInstance()
@@ -53,6 +57,9 @@ class WikiExtensionsApi extends ApiBase {
 		}
 	}
 
+	/**
+	 * @param string $extension
+	 */
 	private function updateExtension( $extension ) {
 		if ( $this->getUser()->isAllowed( 'wikiextensions_update' ) || $this->isWhitelisted() ) {
 			$result = WikiExtensions::getInstance()->updateExtension( $extension );
@@ -64,15 +71,16 @@ class WikiExtensionsApi extends ApiBase {
 	}
 
 	private function isWhitelisted() {
-		global $wgWikiExtensionsAllowedIP;
+		$allowed = $this->getConfig()->get( 'WikiExtensionsAllowedIP' );
 		if ( $this->getUser()->isAnon() && IPUtils::isIPAddress( $this->getUser()->getName() ) ) {
-			if ( in_array( $this->getUser()->getName(), $wgWikiExtensionsAllowedIP ) ) {
+			if ( in_array( $this->getUser()->getName(), $allowed ) ) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	/** @inheritDoc */
 	public function getAllowedParams() {
 		$params = [
 			'do' => [

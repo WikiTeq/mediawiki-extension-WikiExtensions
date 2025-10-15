@@ -1,4 +1,9 @@
 {
+	"@metadata": {
+		"authors": [
+			"WikiTeq"
+		]
+	},
 	"wikiextensions-desc": "Tracks git-installed extensions updates",
 	"wikiextensions-special-extensions-title": "Extensions management",
 	"wikiextensions-special-extensions-desc": "Allows to manage git-installed extensions",
@@ -12,7 +17,10 @@
 	"wikiextensions-special-msg-is_writable": "Directory is not writable",
 	"wikiextensions-special-loading": "Fetching extensions statuses, please wait..",
 	"wikiextensions-api-error-unknown": "Something gone wrong, unable to update the extension. Changes were reverted.",
-	"wikiextensions-special-not-git": "Not a Git repository!",
 	"wikiextensions-special-not-installed": "$1 class is missing, please check if required composer dependencies are installed",
-	"wikiextensions-special-note-git": "<p><strong>Note:</strong> only extensions/skins installed from git and loaded via extension.json  are listed below</p>"
+	"wikiextensions-special-note-git": "<p><strong>Note:</strong> only extensions/skins installed from git and loaded via extension.json  are listed below</p>",
+	"action-wikiextensions_update": "update extensions",
+	"right-wikiextensions_update": "Update extensions",
+	"action-wikiextensions_view": "view extension management",
+	"right-wikiextensions_view": "View extension management"
 }

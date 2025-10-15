@@ -16,19 +16,10 @@
 		}
 
 		&.loading-row {
-			background: linear-gradient(45deg,
-			transparent 25%,
-			rgba(238, 238, 238, 0.5) 25%,
-			rgba(238, 238, 238, 0.5) 30%,
-			transparent 30%,
-			transparent 35%,
-			rgba(238, 238, 238, 0.5) 35%,
-			rgba(238, 238, 238, 0.5) 70%,
-			transparent 70%);
+			background: linear-gradient( 45deg, transparent 25%, rgba( 238, 238, 238, 0.5 ) 25%, rgba( 238, 238, 238, 0.5 ) 30%, transparent 30%, transparent 35%, rgba( 238, 238, 238, 0.5 ) 35%, rgba( 238, 238, 238, 0.5 ) 70%, transparent 70% );
 			animation: shift2 2s linear infinite;
 			background-size: 100px 100%;
-			box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.2),
-			inset 0 -2px 1px rgba(0, 0, 0, 0.2);
+			box-shadow: inset 0 0 1px rgba( 0, 0, 0, 0.2 ), inset 0 -2px 1px rgba( 0, 0, 0, 0.2 );
 		}
 	}
 
@@ -48,7 +39,7 @@
 		border-radius: 10px;
 	}
 
-	input[type="submit"] {
+	input[ type='submit' ] {
 		font-size: 1.2em;
 	}
 
@@ -56,7 +47,7 @@
 		padding: 4px 10px;
 		border-radius: 4px;
 		background-color: #589216;
-		color: white;
+		color: #fff;
 		text-align: center;
 		cursor: pointer;
 		display: inline-block;
@@ -67,26 +58,17 @@
 
 		&.btn-loading {
 			cursor: not-allowed;
-			color: gray;
-			background: linear-gradient(45deg,
-			transparent 25%,
-			rgba(238, 238, 238, 0.5) 25%,
-			rgba(238, 238, 238, 0.5) 30%,
-			transparent 30%,
-			transparent 35%,
-			rgba(238, 238, 238, 0.5) 35%,
-			rgba(238, 238, 238, 0.5) 70%,
-			transparent 70%);
+			color: #808080;
+			background: linear-gradient( 45deg, transparent 25%, rgba( 238, 238, 238, 0.5 ) 25%, rgba( 238, 238, 238, 0.5 ) 30%, transparent 30%, transparent 35%, rgba( 238, 238, 238, 0.5 ) 35%, rgba( 238, 238, 238, 0.5 ) 70%, transparent 70% );
 			animation: shift 2s linear infinite;
 			background-size: 60px 100%;
-			box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.2),
-			inset 0 -2px 1px rgba(0, 0, 0, 0.2);
+			box-shadow: inset 0 0 1px rgba( 0, 0, 0, 0.2 ), inset 0 -2px 1px rgba( 0, 0, 0, 0.2 );
 		}
 	}
 
 	tr.animation-new-in {
 		td {
-			background-color: rgba(0, 255, 0, 0);
+			background-color: rgba( 0, 255, 0, 0 );
 			animation: newin 1s linear;
 		}
 	}
@@ -94,10 +76,11 @@
 
 @keyframes newin {
 	from {
-		background-color: rgba(0, 166, 0, 0.33);
+		background-color: rgba( 0, 166, 0, 0.33 );
 	}
+
 	to {
-		background-color: rgba(0, 255, 0, 0);
+		background-color: rgba( 0, 255, 0, 0 );
 	}
 }
 
@@ -115,30 +98,37 @@
 
 .wikiextensions-wrapper {
 	position: relative;
+
 	.extension-layout {
 		display: flex;
 		align-items: center;
+
 		.extension-name {
 			margin-right: auto;
+
 			.extension-name-title {
 				font-weight: bold;
 			}
 		}
 	}
+
 	.loading-row {
-		background-image: linear-gradient(45deg, #ffffff 25%, #f0f0f0 25%, #f0f0f0 50%, #ffffff 50%, #ffffff 75%, #f0f0f0 75%, #f0f0f0 100%);
+		background-image: linear-gradient( 45deg, #fff 25%, #f0f0f0 25%, #f0f0f0 50%, #fff 50%, #fff 75%, #f0f0f0 75%, #f0f0f0 100% );
 		background-size: 56.57px 56.57px;
 		animation: shift2 5s linear infinite;
 	}
+
 	.wikiextensions-details-link {
 		color: #2020ff;
 		border-bottom: dotted 1px #2020ff;
 		cursor: pointer;
 	}
+
 	pre {
 		max-width: 100%;
 	}
+
 	a.oo-ui-buttonElement-button span b {
-		font-weight: 400;
+		font-weight: normal;
 	}
 }
