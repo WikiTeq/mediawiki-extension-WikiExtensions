@@ -108,6 +108,14 @@ jobs:
       - name: Setup Extension
         uses: actions/checkout@v5
 
+      - name: Setup test extension - examples
+        uses: actions/checkout@v6
+        with:
+          repository: wikimedia/mediawiki-extensions-examples
+          path: ${{ github.workspace }}/examples
+          ref: REL1_35
+          fetch-depth: 10
+  
       - name: Mediawiki PHPUnit
         uses: wikiteq/mediawiki-phpunit-action@master
         with:
@@ -115,3 +123,4 @@ jobs:
           php: ${{ matrix.php }}
           mwbranch: ${{ matrix.mediawiki }}
           extension: ${{ env.EXTNAME }}
+          extra_file: .github/PHPUnitSettings.php

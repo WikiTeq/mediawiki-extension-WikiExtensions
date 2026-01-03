@@ -3,6 +3,7 @@
 namespace MediaWiki\Extension\WikiExtensions\Tests\Integration;
 
 use ApiTestCase;
+use ExtensionRegistry;
 use Status;
 use User;
 use WikiExtensions\WikiExtensions;
@@ -15,8 +16,15 @@ use Wikimedia\TestingAccessWrapper;
  */
 class WikiExtensionsApiTest extends ApiTestCase {
 
-	public function setUp(): void {
+	private $extensionPath;
+
+	protected function setUp(): void {
 		parent::setUp();
+
+		// Find the location of the examples extension
+		$registry = ExtensionRegistry::getInstance();
+		$all = $registry->getAllThings();
+		$this->extensionPath = dirname( $all['examples']['path'] );
 
 		$this->setGroupPermissions( [
 			'*' => [
@@ -35,6 +43,15 @@ class WikiExtensionsApiTest extends ApiTestCase {
 		$this->setMwGlobals( [
 			'wgWikiExtensionsAllowedIP' => [ '192.168.0.0' ],
 		] );
+	}
+
+	protected function tearDown(): void {
+		TestingAccessWrapper::newFromClass( WikiExtensions::class )->instance = null;
+
+		$path = $this->extensionPath;
+		exec( "git -C $path reset --hard origin/REL1_35" );
+
+		parent::tearDown();
 	}
 
 	protected function doExtensionsApiRequest( array $params, User $user ): array {
@@ -63,6 +80,124 @@ class WikiExtensionsApiTest extends ApiTestCase {
 			],
 			$result
 		);
+	}
+
+	public function testGetExamples() {
+		$result = $this->doExtensionsApiRequest(
+			[
+				'do' => 'extension',
+				'extension' => 'examples'
+			],
+			User::newFromName( '192.168.0.0', false )
+		);
+		$this->assertIsArray( $result );
+		$this->assertArrayHasKey( 'wikiextensions', $result );
+		$this->assertCount( 1, $result );
+		$innerRes = $result['wikiextensions'];
+		$this->assertIsArray( $innerRes );
+		$this->assertArrayHasKey( 'status', $innerRes );
+		$this->assertSame( 'OK', $innerRes['status'] );
+		$this->assertArrayHasKey( 'extension', $innerRes );
+		$this->assertCount( 2, $innerRes );
+		$this->verifyExtensionData( $innerRes['extension'] );
+	}
+
+	public function testUpdateExample() {
+		// Nothing to actually update, but API result is the same, tests of the
+		// actual updating happen in WikiExtensionsTest
+		$result = $this->doExtensionsApiRequest(
+			[
+				'do' => 'update',
+				'extension' => 'examples'
+			],
+			User::newFromName( '192.168.0.0', false )
+		);
+		$this->assertIsArray( $result );
+		$this->assertArrayHasKey( 'wikiextensions', $result );
+		$this->assertCount( 1, $result );
+		$innerRes = $result['wikiextensions'];
+		$this->assertIsArray( $innerRes );
+		$this->assertArrayHasKey( 'status', $innerRes );
+		$this->assertSame( 'OK', $innerRes['status'] );
+		$this->assertArrayHasKey( 'extension', $innerRes );
+		$this->assertCount( 2, $innerRes );
+
+		$this->verifyExtensionData( $innerRes['extension'] );
+	}
+
+	public function testUpdateFailure() {
+		// Cannot update WikiExtensions because it is a private repo
+		$result = $this->doExtensionsApiRequest(
+			[
+				'do' => 'update',
+				'extension' => 'WikiExtensions'
+			],
+			User::newFromName( '192.168.0.0', false )
+		);
+		$this->assertIsArray( $result );
+		$this->assertArrayHasKey( 'wikiextensions', $result );
+		$this->assertCount( 1, $result );
+		$innerRes = $result['wikiextensions'];
+		$this->assertIsArray( $innerRes );
+		$this->assertArrayHasKey( 'status', $innerRes );
+		// Not sure where this key comes from, but it should be improved
+		$this->assertSame( "* \$1\n* \$2", $innerRes['status'] );
+		$this->assertArrayHasKey( 'extension', $innerRes );
+		$this->assertCount( 2, $innerRes );
+
+		// Not checking all of the details, that is done in WikiExtensionsTest
+		$this->assertIsArray( $innerRes['extension'] );
+		$this->assertSame( 'WikiExtensions', $innerRes['extension']['name'] );
+	}
+
+	private function verifyExtensionData( $data ) {
+		$this->assertIsArray( $data );
+		$this->assertArrayHasKey( 'git', $data );
+		$this->assertIsArray( $data['git'] );
+		$this->assertArrayHasKey( 'remote_commit', $data['git'] );
+		$this->assertArrayHasKey( 'local_commit', $data['git'] );
+		$this->assertArrayHasKey( 'remote_commit_short', $data['git'] );
+		$this->assertArrayHasKey( 'local_commit_short', $data['git'] );
+
+		// Not pinning to specific commits, just checking correctness
+		$remoteCommit = $data['git']['remote_commit'];
+		$localCommit = $data['git']['local_commit'];
+		$remoteCommitShort = $data['git']['remote_commit_short'];
+		$localCommitShort = $data['git']['local_commit_short'];
+		unset( $data['git']['remote_commit'] );
+		unset( $data['git']['local_commit'] );
+		unset( $data['git']['remote_commit_short'] );
+		unset( $data['git']['local_commit_short'] );
+
+		$this->assertSame(
+			[
+				'name' => 'examples',
+				'version' => null,
+				'is_writable' => 1,
+				'is_git' => 1,
+				'has_updates' => 0,
+				'has_uncommitted_changes' => 0,
+				'can_pull' => 0,
+				'has_submodules' => 0,
+				'git' => [
+					'branch' => 'REL1_35',
+					'status' => [
+						'On branch REL1_35',
+						'Your branch is up to date with \'origin/REL1_35\'.',
+						'',
+						'nothing to commit, working tree clean',
+					],
+				],
+				'error' => null,
+			],
+			$data
+		);
+		// Unlike in WikiExtensionsTest, when the data is passed to the API
+		// ApiResult::validateValue() will convert the CzProject\GitPhp\CommitId
+		// objects to strings (by calling __toString()) and so we can compare
+		// the full commits too
+		$this->assertSame( $remoteCommitShort, $localCommitShort );
+		$this->assertSame( $remoteCommit, $localCommit );
 	}
 
 	private function checkListAllowed( User $user ) {

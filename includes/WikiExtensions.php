@@ -180,10 +180,16 @@ class WikiExtensions {
 		catch ( GitException $e ) {
 			// A merge conflict?
 			if ( $e->getCode() === 1 ) {
-				$repo->execute( [
-					'merge',
-					'--abort'
-				] );
+				try {
+					$repo->execute( [
+						'merge',
+						'--abort'
+					] );
+				} catch ( GitException $e2 ) {
+					$status = Status::newFatal( $e2->getMessage() );
+					$status->fatal( $e->getMessage() );
+					return $status;
+				}
 				$repo->execute( [
 					'reset',
 					'--keep',
