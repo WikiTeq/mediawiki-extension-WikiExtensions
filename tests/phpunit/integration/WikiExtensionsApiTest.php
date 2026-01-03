@@ -16,7 +16,7 @@ use Wikimedia\TestingAccessWrapper;
  */
 class WikiExtensionsApiTest extends ApiTestCase {
 
-	private $extensionPath;
+	private string $extensionPath;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -49,6 +49,7 @@ class WikiExtensionsApiTest extends ApiTestCase {
 		TestingAccessWrapper::newFromClass( WikiExtensions::class )->instance = null;
 
 		$path = $this->extensionPath;
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( "git -C $path reset --hard origin/REL1_35" );
 
 		parent::tearDown();

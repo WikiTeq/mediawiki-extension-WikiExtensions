@@ -12,7 +12,7 @@ use WikiExtensions\WikiExtensions;
  */
 class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 
-	private $extensionPath;
+	private string $extensionPath;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -25,6 +25,7 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 
 	protected function tearDown(): void {
 		$path = $this->extensionPath;
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( "git -C $path reset --hard origin/REL1_35" );
 
 		parent::tearDown();
@@ -44,7 +45,7 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 
 		$all = $extensions->getExtensions();
 		$this->assertIsArray( $all );
-		
+
 		$found = false;
 		$wikiExtensions = false;
 		foreach ( $all as $ext ) {
@@ -140,8 +141,10 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 		// Check out the previous commit but clean up afterwards so it is just
 		// behind a bit
 		$path = $this->extensionPath;
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( "git -C $path reset HEAD~1" );
 		// `git restore` not available in the docker image that comes with mediawiki
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( "git -C $path checkout -- ." );
 
 		$extensions = WikiExtensions::getInstance();
