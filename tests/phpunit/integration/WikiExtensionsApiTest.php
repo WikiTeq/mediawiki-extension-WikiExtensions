@@ -16,6 +16,7 @@ use Wikimedia\TestingAccessWrapper;
  */
 class WikiExtensionsApiTest extends ApiTestCase {
 
+	/** @var string */
 	private string $extensionPath;
 
 	protected function setUp(): void {
