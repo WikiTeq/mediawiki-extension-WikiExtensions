@@ -107,6 +107,10 @@ jobs:
     steps:
       - name: Setup Extension
         uses: actions/checkout@v5
+        with:
+          # We want the WikiExtensions repo to be treated as inaccessible to
+          # be able to test failure scenarios
+          persist-credentials: false
 
       - name: Setup test extension - examples
         uses: actions/checkout@v6
