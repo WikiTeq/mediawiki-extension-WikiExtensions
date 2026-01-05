@@ -108,6 +108,21 @@ jobs:
       - name: Setup Extension
         uses: actions/checkout@v5
 
+      - name: Setup test extension - examples
+        uses: actions/checkout@v6
+        with:
+          repository: wikimedia/mediawiki-extensions-examples
+          path: ${{ github.workspace }}/examples
+          ref: REL1_35
+          fetch-depth: 10
+
+      # Examples is pinned to using minus-x 1.1.0, we use 1.1.3, and our
+      # phpunit action loads all dev dependencies of extensions; just delete all
+      # of examples'
+      - name: examples - remove composer.json dev dependencies
+        working-directory: ${{ github.workspace }}/examples
+        run: jq 'delpaths([["require-dev"]])' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
+  
       - name: Mediawiki PHPUnit
         uses: wikiteq/mediawiki-phpunit-action@master
         with:
@@ -115,3 +130,4 @@ jobs:
           php: ${{ matrix.php }}
           mwbranch: ${{ matrix.mediawiki }}
           extension: ${{ env.EXTNAME }}
+          extra_file: .github/PHPUnitSettings.php
