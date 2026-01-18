@@ -27,6 +27,8 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 	protected function tearDown(): void {
 		$path = $this->extensionPath;
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
+		exec( "git -C $path config remote.origin.url https://github.com/wikimedia/mediawiki-extensions-examples" );
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( "git -C $path reset --hard origin/REL1_35" );
 
 		parent::tearDown();
@@ -42,39 +44,48 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 	}
 
 	public function testAllExtensions() {
+		// Break the git config for the extension so that pulling will fail,
+		// the teardown will restore the git config
+		$path = $this->extensionPath;
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
+		exec( "git -C $path config remote.origin.url borken" );
+
 		$extensions = WikiExtensions::getInstance();
 
 		$all = $extensions->getExtensions();
 		$this->assertIsArray( $all );
 
-		$found = false;
+		$exampleExtension = false;
 		$wikiExtensions = false;
 		foreach ( $all as $ext ) {
 			$this->assertIsArray( $ext );
 			$this->assertArrayHasKey( 'name', $ext );
 			if ( $ext['name'] === 'examples' ) {
-				$found = true;
+				$exampleExtension = $ext;
 			} elseif ( $ext['name'] === 'WikiExtensions' ) {
 				$wikiExtensions = $ext;
 			}
 		}
-		$this->assertTrue( $found, 'examples extension found' );
 		$this->assertIsArray( $wikiExtensions );
-		// Should have failed to fetch due to private repo
-		$this->assertNull( $wikiExtensions['git']['remote_commit'] );
-		$this->assertNull( $wikiExtensions['git']['remote_commit_short'] );
-		// In GitHub actions, able to fetch for some reason
-		if ( $wikiExtensions['error'] !== null ) {
-			$this->assertSame(
-				"Command 'git fetch -q' failed (exit-code 128).",
-				$wikiExtensions['error']
-			);
-		}
+		$this->assertIsArray( $exampleExtension, 'examples extension found' );
+		// Should have failed to fetch due to broken remote
+		$this->assertNull( $exampleExtension['git']['remote_commit'] );
+		$this->assertNull( $exampleExtension['git']['remote_commit_short'] );
+		$this->assertSame(
+			"Command 'git fetch -q' failed (exit-code 128).",
+			$exampleExtension['error']
+		);
 	}
 
 	public function testFailedPull() {
+		// Break the git config for the extension so that pulling will fail,
+		// the teardown will restore the git config
+		$path = $this->extensionPath;
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
+		exec( "git -C $path config remote.origin.url borken" );
+
 		$extensions = WikiExtensions::getInstance();
-		$result = $extensions->updateExtension( 'WikiExtensions' );
+		$result = $extensions->updateExtension( 'examples' );
 		$this->assertFalse( $result->isOK() );
 		$this->assertSame(
 			[
