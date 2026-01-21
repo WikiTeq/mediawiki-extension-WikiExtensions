@@ -51,6 +51,8 @@ class WikiExtensionsApiTest extends ApiTestCase {
 
 		$path = $this->extensionPath;
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
+		exec( "git -C $path config remote.origin.url https://github.com/wikimedia/mediawiki-extensions-examples" );
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( "git -C $path reset --hard origin/REL1_35" );
 
 		parent::tearDown();
@@ -128,11 +130,15 @@ class WikiExtensionsApiTest extends ApiTestCase {
 	}
 
 	public function testUpdateFailure() {
-		// Cannot update WikiExtensions because it is a private repo
+		// Break the git config for the extension so that pulling will fail,
+		// the teardown will restore the git config
+		$path = $this->extensionPath;
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
+		exec( "git -C $path config remote.origin.url borken" );
 		$result = $this->doExtensionsApiRequest(
 			[
 				'do' => 'update',
-				'extension' => 'WikiExtensions'
+				'extension' => 'examples'
 			],
 			User::newFromName( '192.168.0.0', false )
 		);
@@ -149,7 +155,7 @@ class WikiExtensionsApiTest extends ApiTestCase {
 
 		// Not checking all of the details, that is done in WikiExtensionsTest
 		$this->assertIsArray( $innerRes['extension'] );
-		$this->assertSame( 'WikiExtensions', $innerRes['extension']['name'] );
+		$this->assertSame( 'examples', $innerRes['extension']['name'] );
 	}
 
 	private function verifyExtensionData( $data ) {
