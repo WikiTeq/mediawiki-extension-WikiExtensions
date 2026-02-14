@@ -72,6 +72,9 @@ class WikiExtensionsApi extends ApiBase {
 
 	private function isWhitelisted() {
 		$allowed = $this->getConfig()->get( 'WikiExtensionsAllowedIP' );
+		if ( !is_array( $allowed ) ) {
+			return false;
+		}
 		if ( $this->getUser()->isAnon() && IPUtils::isIPAddress( $this->getUser()->getName() ) ) {
 			if ( in_array( $this->getUser()->getName(), $allowed ) ) {
 				return true;
