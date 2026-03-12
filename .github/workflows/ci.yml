@@ -166,3 +166,5 @@ jobs:
           mwbranch: ${{ matrix.mediawiki }}
           extension: ${{ env.EXTNAME }}
           extra_file: .github/PHPUnitSettings.php
+          # Examples extension on 1.43 complains about AUTO_INCREMENT
+          use_mysql: true
