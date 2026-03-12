@@ -159,7 +159,11 @@ class WikiExtensionsApiTest extends ApiTestCase {
 		$this->assertIsArray( $innerRes );
 		$this->assertArrayHasKey( 'status', $innerRes );
 		// Not sure where this key comes from, but it should be improved
-		$this->assertSame( "* \$1\n* \$2", $innerRes['status'] );
+		if ( version_compare( MW_VERSION, '1.43', '>=' ) ) {
+			$this->assertSame( 'rawmessage', $innerRes['status'] );
+		} else {
+			$this->assertSame( "* \$1\n* \$2", $innerRes['status'] );
+		}
 		$this->assertArrayHasKey( 'extension', $innerRes );
 		$this->assertCount( 2, $innerRes );
 
