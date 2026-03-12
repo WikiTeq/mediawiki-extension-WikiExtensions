@@ -138,8 +138,7 @@ class WikiExtensions {
 				$result['can_pull'] = (int)false;
 			}
 
-		}
-		catch ( GitException $e ) {
+		} catch ( GitException $e ) {
 			// Something gone wrong, do nothing
 			$result['error'] = $e->getMessage();
 			$result['can_pull'] = (int)false;
@@ -166,8 +165,7 @@ class WikiExtensions {
 
 		try {
 			$repo = new GitRepository( $path );
-		}
-		catch ( GitException $e ) {
+		} catch ( GitException $e ) {
 			// We should not land here, not a repo
 			return Status::newFatal( $e->getMessage() );
 		}
@@ -176,8 +174,7 @@ class WikiExtensions {
 		try {
 			// Work around https://github.com/czproject/git-php/issues/77
 			$repo->run( 'pull' );
-		}
-		catch ( GitException $e ) {
+		} catch ( GitException $e ) {
 			// A merge conflict?
 			if ( $e->getCode() === 1 ) {
 				try {
@@ -209,8 +206,7 @@ class WikiExtensions {
 					'submodule',
 					'update'
 				] );
-			}
-			catch ( GitException $e ) {
+			} catch ( GitException $e ) {
 				return Status::newFatal( $e->getMessage() );
 			}
 		}

@@ -70,6 +70,12 @@ class WikiExtensionsApi extends ApiBase {
 		}
 	}
 
+	/**
+	 * Can the user modify extension status based on being an anonymous user
+	 * with an allowed IP address?
+	 *
+	 * @return bool
+	 */
 	private function isWhitelisted() {
 		$allowed = $this->getConfig()->get( 'WikiExtensionsAllowedIP' );
 		if ( $this->getUser()->isAnon() && IPUtils::isIPAddress( $this->getUser()->getName() ) ) {

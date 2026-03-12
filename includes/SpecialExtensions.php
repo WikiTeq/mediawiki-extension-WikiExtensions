@@ -39,6 +39,11 @@ class SpecialExtensions extends SpecialPage {
 		$out->addHTML( $html );
 	}
 
+	/**
+	 * Get the HTML that will be targetted by the JavaScript
+	 *
+	 * @return string
+	 */
 	private function renderHomepage() {
 		return "<div class='wikiextensions-wrapper'></div>";
 	}

@@ -75,6 +75,20 @@ jobs:
           repository: wikimedia/mediawiki
           ref: ${{ matrix.mediawiki }}
 
+      # Core 1.35 is pinned to some vulnerable versions of dependencies but
+      # is EOL so that won't change
+      # - phpunit/phpunit@8.5.28
+      # - psy/psysh@0.10.4
+      - name: Bypass vulnerability warnings
+        if: ${{ matrix.mediawiki == 'REL1_35' }}
+        run: |
+          cp composer.json composer.json.bak
+          cat composer.json.bak | jq '. + {"config": ( .config + { "audit": { "ignore": { "CVE-2026-24765": "Pinned to vulnerable version" } } } ) }' > composer.json
+          rm composer.json.bak
+          cp composer.json composer.json.bak
+          cat composer.json.bak | jq '. + {"config": ( .config + { "audit": { "ignore": ( .config.audit.ignore + { "CVE-2026-25129": "Pinned to vulnerable version" } ) } } ) }' > composer.json
+          rm composer.json.bak
+
       - name: Setup Extension
         uses: actions/checkout@v6
         with:
@@ -121,6 +135,10 @@ jobs:
           # Only test MW 1.35 with PHP 7.4
           - php: '7.4'
             mediawiki: REL1_35
+        exclude:
+          # MW 1.43 requires PHP 8.1+
+          - php: '7.4'
+            mediawiki: REL1_43
     steps:
       - name: Setup Extension
         uses: actions/checkout@v6
