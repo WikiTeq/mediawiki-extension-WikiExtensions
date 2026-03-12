@@ -4,5 +4,7 @@
 			"Daniel Scherzer"
 		]
 	},
-	"apihelp-wikiextensions-summary": "Manage extensions"
+	"apihelp-wikiextensions-summary": "Manage extensions",
+	"apihelp-wikiextensions-param-do": "Action to perform (list, extension, or update)",
+	"apihelp-wikiextensions-param-extension": "Extension to target (for information or updating)"
 }
