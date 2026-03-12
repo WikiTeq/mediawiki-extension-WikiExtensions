@@ -19,10 +19,10 @@ class AlwaysSafeRunner implements IRunner {
 	}
 
 	/** @inheritDoc */
-	public function run($cwd, array $args, ?array $env = NULL) {
+	public function run( $cwd, array $args, ?array $env = null ) {
 		return $this->baseRunner->run(
 			$cwd,
-			['-c', 'safe.directory=*', ...$args],
+			[ '-c', 'safe.directory=*', ...$args ],
 			$env
 		);
 	}
