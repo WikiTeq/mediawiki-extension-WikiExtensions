@@ -71,7 +71,8 @@
 	"AutoloadClasses": {
 		"WikiExtensions\\WikiExtensions": "includes/WikiExtensions.php",
 		"WikiExtensions\\SpecialExtensions": "includes/SpecialExtensions.php",
-		"WikiExtensions\\WikiExtensionsApi": "includes/WikiExtensionsApi.php"
+		"WikiExtensions\\WikiExtensionsApi": "includes/WikiExtensionsApi.php",
+		"WikiExtensions\\AlwaysSafeRunner": "includes/AlwaysSafeRunner.php"
 	},
 	"SpecialPages": {
 		"Extensions": "WikiExtensions\\SpecialExtensions"

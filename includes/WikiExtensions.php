@@ -4,6 +4,7 @@ namespace WikiExtensions;
 
 use CzProject\GitPhp\GitException;
 use CzProject\GitPhp\GitRepository;
+use CzProject\GitPhp\Runners\CliRunner;
 use ExtensionRegistry;
 use Status;
 
@@ -98,7 +99,7 @@ class WikiExtensions {
 		// Try to get some GIT information
 		try {
 			// Init the repository
-			$repo = new GitRepository( $path );
+			$repo = new GitRepository( $path, new AlwaysSafeRunner( new CliRunner() ) );
 			// Get local branch name
 			$localBranch = $repo->getCurrentBranchName();
 			$result['git']['branch'] = $localBranch;
