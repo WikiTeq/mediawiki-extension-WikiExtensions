@@ -82,7 +82,7 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 		$this->assertNull( $exampleExtension['git']['remote_commit'] );
 		$this->assertNull( $exampleExtension['git']['remote_commit_short'] );
 		$this->assertSame(
-			"Command 'git fetch -q' failed (exit-code 128).",
+			"Command 'git -c 'safe.directory=*' fetch -q' failed (exit-code 128).",
 			$exampleExtension['error']
 		);
 	}
