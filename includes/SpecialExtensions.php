@@ -19,7 +19,11 @@ class SpecialExtensions extends SpecialPage {
 	 */
 	public function execute( $subPage = null ) {
 		$out = $this->getOutput();
-		$out->setPageTitle( $this->msg( 'wikiextensions-special-extensions-title' ) );
+		if ( version_compare( MW_VERSION, '1.41', '>=' ) ) {
+			$out->setPageTitleMsg( $this->msg( 'wikiextensions-special-extensions-title' ) );
+		} else {
+			$out->setPageTitle( $this->msg( 'wikiextensions-special-extensions-title' ) );
+		}
 
 		if ( !$this->getUser()->isAllowed( 'wikiextensions_view' ) ) {
 			// it throws the PermissionsError exception
