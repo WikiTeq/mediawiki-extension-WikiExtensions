@@ -1,5 +1,9 @@
 <?php
 
+// We run Phan with MW 1.35, 1.39 and MW 1.43, the suppression from 1.35/1.39
+// isn't needed on 1.43 and phan would complain about that
+// @phan-file-suppress UnusedPluginSuppression,UnusedPluginFileSuppression
+
 namespace WikiExtensions;
 
 use PermissionsError;
@@ -20,6 +24,7 @@ class SpecialExtensions extends SpecialPage {
 	public function execute( $subPage = null ) {
 		$out = $this->getOutput();
 		if ( version_compare( MW_VERSION, '1.41', '>=' ) ) {
+			// @phan-suppress-next-line PhanUndeclaredMethod
 			$out->setPageTitleMsg( $this->msg( 'wikiextensions-special-extensions-title' ) );
 		} else {
 			$out->setPageTitle( $this->msg( 'wikiextensions-special-extensions-title' ) );
