@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '7.4' ]
+        php: [ '8.3' ]
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -28,7 +28,7 @@ jobs:
           tools: composer, phplint
 
       - name: Setup Extension
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Composer
         run: composer update
@@ -45,8 +45,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '7.4' ]
-        mediawiki: [ REL1_35 ]
+        php: [ '7.4', '8.1', '8.3' ]
+        mediawiki: [ REL1_39, REL1_43 ]
+        include:
+          # Only test MW 1.35 with PHP 7.4
+          - php: '7.4'
+            mediawiki: REL1_35
+        exclude:
+          # MW 1.43 requires PHP 8.1+
+          - php: '7.4'
+            mediawiki: REL1_43
+          # MW 1.39 requires mediawiki/mediawiki-phan-config@0.12.1 which
+          # requires mediawiki/phan-taint-check-plugin@4.0.0 which crashes
+          # on PHP 8.2+ due to use of deprecated string interpolation
+          - php: '8.3'
+            mediawiki: REL1_39
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -57,13 +70,13 @@ jobs:
           tools: composer
 
       - name: Setup MediaWiki
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: wikimedia/mediawiki
           ref: ${{ matrix.mediawiki }}
 
       - name: Setup Extension
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: extensions/${{ env.EXTNAME }}
 
@@ -81,12 +94,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
       - name: Setup Extension
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install dependencies
         run: npm ci
@@ -102,18 +115,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '7.4' ]
-        mediawiki: [ REL1_35 ]
+        php: [ '7.4', '8.1', '8.3' ]
+        mediawiki: [ REL1_39, REL1_43 ]
+        include:
+          # Only test MW 1.35 with PHP 7.4
+          - php: '7.4'
+            mediawiki: REL1_35
     steps:
       - name: Setup Extension
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup test extension - examples
         uses: actions/checkout@v6
         with:
           repository: wikimedia/mediawiki-extensions-examples
           path: ${{ github.workspace }}/examples
-          ref: REL1_35
+          ref: ${{ matrix.mediawiki }}
           fetch-depth: 10
 
       # Examples is pinned to using minus-x 1.1.0, we use 1.1.3, and our
