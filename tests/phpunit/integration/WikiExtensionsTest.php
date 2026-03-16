@@ -101,12 +101,12 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 			[
 				[
 					'type' => 'error',
-					'message' => 'Command \'git merge --abort\' failed (exit-code 128).',
+					'message' => 'Command \'git -c \'safe.directory=*\' merge --abort\' failed (exit-code 128).',
 					'params' => [],
 				],
 				[
 					'type' => 'error',
-					'message' => 'Command \'git pull\' failed (exit-code 1).',
+					'message' => 'Command \'git -c \'safe.directory=*\' pull\' failed (exit-code 1).',
 					'params' => [],
 				],
 			],
