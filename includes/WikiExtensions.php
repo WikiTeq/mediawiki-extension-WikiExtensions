@@ -165,7 +165,7 @@ class WikiExtensions {
 		$path = dirname( $this->things[$extensionName]['path'] );
 
 		try {
-			$repo = new GitRepository( $path );
+			$repo = new GitRepository( $path, new AlwaysSafeRunner( new CliRunner() ) );
 		} catch ( GitException $e ) {
 			// We should not land here, not a repo
 			return Status::newFatal( $e->getMessage() );
