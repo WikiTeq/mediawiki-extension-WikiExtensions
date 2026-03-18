@@ -4,5 +4,7 @@
 			"Daniel Scherzer"
 		]
 	},
-	"apihelp-wikiextensions-summary": "{{doc-apihelp-summary|wikiextensions}}"
+	"apihelp-wikiextensions-summary": "{{doc-apihelp-summary|wikiextensions}}",
+	"apihelp-wikiextensions-param-do": "{{doc-apihelp-param|wikiextensions|do}}",
+	"apihelp-wikiextensions-param-extension": "{{doc-apihelp-param|wikiextensions|extension}}"
 }

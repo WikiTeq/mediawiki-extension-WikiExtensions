@@ -19,6 +19,8 @@ class WikiExtensionsApiTest extends ApiTestCase {
 	/** @var string */
 	private string $extensionPath;
 
+	private string $branch;
+
 	protected function setUp(): void {
 		parent::setUp();
 
@@ -44,6 +46,14 @@ class WikiExtensionsApiTest extends ApiTestCase {
 		$this->setMwGlobals( [
 			'wgWikiExtensionsAllowedIP' => [ '192.168.0.0' ],
 		] );
+
+		if ( version_compare( MW_VERSION, '1.43', '>=' ) ) {
+			$this->branch = 'REL1_43';
+		} elseif ( version_compare( MW_VERSION, '1.39', '>=' ) ) {
+			$this->branch = 'REL1_39';
+		} else {
+			$this->branch = 'REL1_35';
+		}
 	}
 
 	protected function tearDown(): void {
@@ -53,7 +63,7 @@ class WikiExtensionsApiTest extends ApiTestCase {
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( "git -C $path config remote.origin.url https://github.com/wikimedia/mediawiki-extensions-examples" );
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
-		exec( "git -C $path reset --hard origin/REL1_35" );
+		exec( "git -C $path reset --hard origin/" . $this->branch );
 
 		parent::tearDown();
 	}
@@ -149,7 +159,11 @@ class WikiExtensionsApiTest extends ApiTestCase {
 		$this->assertIsArray( $innerRes );
 		$this->assertArrayHasKey( 'status', $innerRes );
 		// Not sure where this key comes from, but it should be improved
-		$this->assertSame( "* \$1\n* \$2", $innerRes['status'] );
+		if ( version_compare( MW_VERSION, '1.43', '>=' ) ) {
+			$this->assertSame( 'rawmessage', $innerRes['status'] );
+		} else {
+			$this->assertSame( "* \$1\n* \$2", $innerRes['status'] );
+		}
 		$this->assertArrayHasKey( 'extension', $innerRes );
 		$this->assertCount( 2, $innerRes );
 
@@ -177,6 +191,7 @@ class WikiExtensionsApiTest extends ApiTestCase {
 		unset( $data['git']['remote_commit_short'] );
 		unset( $data['git']['local_commit_short'] );
 
+		$branch = $this->branch;
 		$this->assertSame(
 			[
 				'name' => 'examples',
@@ -188,10 +203,10 @@ class WikiExtensionsApiTest extends ApiTestCase {
 				'can_pull' => 0,
 				'has_submodules' => 0,
 				'git' => [
-					'branch' => 'REL1_35',
+					'branch' => $branch,
 					'status' => [
-						'On branch REL1_35',
-						'Your branch is up to date with \'origin/REL1_35\'.',
+						'On branch ' . $branch,
+						"Your branch is up to date with 'origin/$branch'.",
 						'',
 						'nothing to commit, working tree clean',
 					],

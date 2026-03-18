@@ -15,6 +15,8 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 	/** @var string */
 	private string $extensionPath;
 
+	private string $branch;
+
 	protected function setUp(): void {
 		parent::setUp();
 
@@ -22,6 +24,14 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 		$registry = ExtensionRegistry::getInstance();
 		$all = $registry->getAllThings();
 		$this->extensionPath = dirname( $all['examples']['path'] );
+
+		if ( version_compare( MW_VERSION, '1.43', '>=' ) ) {
+			$this->branch = 'REL1_43';
+		} elseif ( version_compare( MW_VERSION, '1.39', '>=' ) ) {
+			$this->branch = 'REL1_39';
+		} else {
+			$this->branch = 'REL1_35';
+		}
 	}
 
 	protected function tearDown(): void {
@@ -29,7 +39,7 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( "git -C $path config remote.origin.url https://github.com/wikimedia/mediawiki-extensions-examples" );
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
-		exec( "git -C $path reset --hard origin/REL1_35" );
+		exec( "git -C $path reset --hard origin/" . $this->branch );
 
 		parent::tearDown();
 	}
@@ -72,7 +82,7 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 		$this->assertNull( $exampleExtension['git']['remote_commit'] );
 		$this->assertNull( $exampleExtension['git']['remote_commit_short'] );
 		$this->assertSame(
-			"Command 'git fetch -q' failed (exit-code 128).",
+			"Command 'git -c 'safe.directory=*' fetch -q' failed (exit-code 128).",
 			$exampleExtension['error']
 		);
 	}
@@ -91,12 +101,12 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 			[
 				[
 					'type' => 'error',
-					'message' => 'Command \'git merge --abort\' failed (exit-code 128).',
+					'message' => 'Command \'git -c \'safe.directory=*\' merge --abort\' failed (exit-code 128).',
 					'params' => [],
 				],
 				[
 					'type' => 'error',
-					'message' => 'Command \'git pull\' failed (exit-code 1).',
+					'message' => 'Command \'git -c \'safe.directory=*\' pull\' failed (exit-code 1).',
 					'params' => [],
 				],
 			],
@@ -126,6 +136,7 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 		unset( $data['git']['remote_commit_short'] );
 		unset( $data['git']['local_commit_short'] );
 
+		$branch = $this->branch;
 		$this->assertSame(
 			[
 				'name' => 'examples',
@@ -137,10 +148,10 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 				'can_pull' => 0,
 				'has_submodules' => 0,
 				'git' => [
-					'branch' => 'REL1_35',
+					'branch' => $branch,
 					'status' => [
-						'On branch REL1_35',
-						'Your branch is up to date with \'origin/REL1_35\'.',
+						'On branch ' . $branch,
+						"Your branch is up to date with 'origin/$branch'.",
 						'',
 						'nothing to commit, working tree clean',
 					],
@@ -183,6 +194,7 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 		unset( $data['git']['remote_commit_short'] );
 		unset( $data['git']['local_commit_short'] );
 
+		$branch = $this->branch;
 		$this->assertSame(
 			[
 				'name' => 'examples',
@@ -194,10 +206,10 @@ class WikiExtensionsTest extends MediaWikiIntegrationTestCase {
 				'can_pull' => 1,
 				'has_submodules' => 0,
 				'git' => [
-					'branch' => 'REL1_35',
+					'branch' => $branch,
 					'status' => [
-						'On branch REL1_35',
-						'Your branch is behind \'origin/REL1_35\' by 1 commit, and can be fast-forwarded.',
+						'On branch ' . $branch,
+						"Your branch is behind 'origin/$branch' by 1 commit, and can be fast-forwarded.",
 						'  (use "git pull" to update your local branch)',
 						'',
 						'nothing to commit, working tree clean',

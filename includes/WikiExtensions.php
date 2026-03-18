@@ -4,6 +4,7 @@ namespace WikiExtensions;
 
 use CzProject\GitPhp\GitException;
 use CzProject\GitPhp\GitRepository;
+use CzProject\GitPhp\Runners\CliRunner;
 use ExtensionRegistry;
 use Status;
 
@@ -98,7 +99,7 @@ class WikiExtensions {
 		// Try to get some GIT information
 		try {
 			// Init the repository
-			$repo = new GitRepository( $path );
+			$repo = new GitRepository( $path, new AlwaysSafeRunner( new CliRunner() ) );
 			// Get local branch name
 			$localBranch = $repo->getCurrentBranchName();
 			$result['git']['branch'] = $localBranch;
@@ -138,8 +139,7 @@ class WikiExtensions {
 				$result['can_pull'] = (int)false;
 			}
 
-		}
-		catch ( GitException $e ) {
+		} catch ( GitException $e ) {
 			// Something gone wrong, do nothing
 			$result['error'] = $e->getMessage();
 			$result['can_pull'] = (int)false;
@@ -165,9 +165,8 @@ class WikiExtensions {
 		$path = dirname( $this->things[$extensionName]['path'] );
 
 		try {
-			$repo = new GitRepository( $path );
-		}
-		catch ( GitException $e ) {
+			$repo = new GitRepository( $path, new AlwaysSafeRunner( new CliRunner() ) );
+		} catch ( GitException $e ) {
 			// We should not land here, not a repo
 			return Status::newFatal( $e->getMessage() );
 		}
@@ -176,8 +175,7 @@ class WikiExtensions {
 		try {
 			// Work around https://github.com/czproject/git-php/issues/77
 			$repo->run( 'pull' );
-		}
-		catch ( GitException $e ) {
+		} catch ( GitException $e ) {
 			// A merge conflict?
 			if ( $e->getCode() === 1 ) {
 				try {
@@ -209,8 +207,7 @@ class WikiExtensions {
 					'submodule',
 					'update'
 				] );
-			}
-			catch ( GitException $e ) {
+			} catch ( GitException $e ) {
 				return Status::newFatal( $e->getMessage() );
 			}
 		}
