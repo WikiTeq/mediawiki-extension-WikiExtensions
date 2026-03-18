@@ -1,7 +1,7 @@
 <?php
 
-// We run Phan with MW 1.35, 1.39 and MW 1.43, the suppression from 1.35/1.39
-// isn't needed on 1.43 and phan would complain about that
+// We run Phan with both MW 1.39 and MW 1.43, the suppression from 1.39 isn't
+// needed on 1.43 and phan would complain about that
 // @phan-file-suppress UnusedPluginSuppression,UnusedPluginFileSuppression
 
 namespace WikiExtensions;
