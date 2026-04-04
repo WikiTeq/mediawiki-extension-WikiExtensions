@@ -124,6 +124,9 @@ class WikiExtensions {
 					'rev-parse',
 					$localBranch . '@{upstream}'
 				] );
+				if ( $res === [] || !isset( $res[0] ) ) {
+					return $result;
+				}
 				$remoteCommit = $res[0];
 				$result['git']['remote_commit'] = $remoteCommit;
 				$result['git']['remote_commit_short'] = substr( $remoteCommit, 0, 7 );
@@ -188,11 +191,15 @@ class WikiExtensions {
 					$status->fatal( $e->getMessage() );
 					return $status;
 				}
-				$repo->execute( [
-					'reset',
-					'--keep',
-					'HEAD@{1}'
-				] );
+				try {
+					$repo->execute( [
+						'reset',
+						'--keep',
+						'HEAD@{1}'
+					] );
+				} catch ( GitException $e3 ) {
+					return Status::newFatal( $e3->getMessage() );
+				}
 			}
 			if ( $e->getCode() === 128 ) {
 				// Perms?
