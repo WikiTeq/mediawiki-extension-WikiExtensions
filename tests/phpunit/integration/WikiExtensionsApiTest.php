@@ -318,11 +318,11 @@ class WikiExtensionsApiTest extends ApiTestCase {
 		);
 	}
 
-	private function testUpdateIPAllowed() {
+	public function testUpdateIPAllowed() {
 		$this->checkUpdateAllowed( User::newFromName( '192.168.0.0', false ) );
 	}
 
-	private function testUpdatePermission() {
+	public function testUpdatePermission() {
 		$this->checkUpdateAllowed( $this->getTestSysop()->getUser() );
 	}
 
